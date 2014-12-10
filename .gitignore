@@ -1,0 +1,9 @@
+# ignore raw counts file
+*.tsv
+
+# ignore R-objects because they will get really large
+*.RData
+
+# History files
+.Rhistory
+.Rapp.history
