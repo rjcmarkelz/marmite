@@ -10,3 +10,5 @@
 
 # ignore all the things in data directory
 /data
+
+/Output/eQTL_voom_fit
