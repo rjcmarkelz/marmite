@@ -7,3 +7,6 @@
 # History files
 .Rhistory
 .Rapp.history
+
+# ignore all the things in data directory
+/data
