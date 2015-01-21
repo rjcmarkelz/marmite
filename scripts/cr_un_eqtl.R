@@ -19,6 +19,7 @@ class(brassica_genes)[1] <- "riself"
 brassica_genes <- jittermap(brassica_genes)
 brassica_genes
 
+
 brassica_genes <- est.rf(brassica_genes)
 plot.rf(brassica_genes) 
 

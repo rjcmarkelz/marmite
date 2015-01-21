@@ -124,6 +124,12 @@ scanone_2011_STP <- scanone(brassica_traits, pheno.col = "X2011_STP", method = "
 scanone_2011_STP
 plot(scanone_2011_STP, chr = 3)
 
+
+so_flower_oldmap <- scanone(brassica_traits, pheno.col = 4, method = "imp", use="all.obs")
+plot(so_flower_oldmap)
+plot(so_flowering)
+
+
 so.perm <- scanone(brassica_traits, method = "imp", n.perm = 1000) 
 summary(so.perm)
 so.perm95 <- summary(so.perm)[1] #keep 95%
@@ -132,7 +138,9 @@ so.perm95 <- summary(so.perm)[1] #keep 95%
 # 5%  2.44
 # 10% 2.13
 
-
+so_flowering <- scanone(br_phys, pheno.col = 4,
+ method = "imp", use="all.obs")
+plot(so_flowering)
 
 
 

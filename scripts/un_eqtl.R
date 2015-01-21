@@ -26,6 +26,9 @@ brass_total <- calc.errorlod(brass_total, error.prob=0.001)
 system.time(scanone_imp_tot <- scanone(brass_total, pheno.col = 1:35039, 
 	         method = "imp", use="all.obs"))
 
+system.time(scanone_imp_tot <- scanone(brass_total, pheno.col = 1:35039, 
+	         method = "imp", use="all.obs"))
+
 save.image(file = "un_eqtl.RData", version = NULL,
  ascii = FALSE, safe = TRUE)
 
@@ -44,18 +47,32 @@ lod.thr <- lod.thrs[1]
 
 #reduce object size by getting removing NS peaks
 high1 <- highlod(scanone_imp_tot, lod.thr = lod.thr, drop.lod = 1.5)
-
+length(high1)
+attributes(high1)
 max(high1, lod.thr = lod.thrs)
-high1
+head(high1)
 hots1 <- hotsize(high1, lod.thr = lod.thr)
 hots1
 
-plot(hots1, cex.lab = 1.5, cex.axis = 1.5, chr = "A03")
+highA03 <- highlod(scanone_imp_tot, lod.thr = lod.thr, drop.lod = 1.5, chr = "A03")
+length(highA03)
+dim(highA03)
+str(highA03)
+
+plot(hots1, cex.lab = 1.5, cex.axis = 1.5)
+head(hots1)
+sum(hots1$max.N)
+
 
 library(eqtl)
 ?define.peak
-brassica_peaks <- define.peak(scanone_imp_tot, th = 4.0, si = 1.0,
+brassica_peaks <- define.peak(scanone_imp_tot, th = 4.0, si = 2.0,
                                lodcolumn= "all", chr=c("A03"))
+brassica_peaks_total <- define.peak(scanone_imp_tot, th = 4.0, si = 1.0,
+                               lodcolumn= "all")
+dim(brassica_peaks_total)
+head(brassica_peaks_total)
+
 attributes(brassica_peaks)$scanone
 
 
@@ -104,4 +121,14 @@ attributes(peaks_red)$si <- 1.0
 attributes(peaks_red)$window <- 20
 attributes(peaks_red)
 length(peaks_red)
+head(peaks_red)
+names(peaks_red)
+
+
+peaks_A01 <- brassica_peaks_total[is.na(sapply(brassica_peaks_total,`[`,1))]
+peaks_red_A01 <- brassica_peaks_total[!is.na(sapply(brassica_peaks_total,`[`,1))]
+
+length(peaks_red_total)
+
+summary(scanone_imp_tot)
 
