@@ -59,6 +59,7 @@ write.table(br_blups_final, "br_blups_RQTL.csv", col.names= FALSE,
 	         row.names = TRUE, sep = ",")
 
 
+#now for some QTL mapping
 library(qtl)
 
 br_phys <- read.cross("csvsr", genfile ="Brassica_F8_v2.1_gen.csv", 
@@ -79,6 +80,15 @@ colnames(pheno_list)
 so_flowering <- scanone(br_phys, pheno.col = 4,
  method = "imp", use="all.obs")
 plot(so_flowering)
+
+# multi QTL test
+multqtl <- scanone(br_phys, pheno.col = 4:6,
+ method = "imp", use="all.obs")
+plot(multqtl)
+head(multqtl)
+str(multqtl)
+
+
 
 so_flowering <- scanone(br_phys, pheno.col = "germ_flr", method = "imp", use="all.obs")
 plot(so_flowering, chr = "A10")
