@@ -91,9 +91,12 @@ pdens = function(x,...){
  points(x,rep(0,length(x)),col='red',pch="|")
 }
 
+?parApply
+library(snow)
 
+head(geno)
 
-
-
+head(pheno)
+pheno
 
 
