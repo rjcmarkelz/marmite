@@ -74,7 +74,7 @@ br_traits <- function(geno, effect = 1, variance = 0.1){
 }
 
 y1 <- br_traits(g11, effect = 2, variance = 0.1) + br_traits(g12, effect = 2, variance = 0.1)
-y1
+ploty1
 
 # replace trait columns what trait names
 br_test_cross$pheno$trait1 <- br_traits(g11, effect = 0.3, variance = 0.5) + br_traits(g12, effect = 0.3, variance = 0.5)
@@ -133,6 +133,7 @@ CV
 output <- EBlassoNEG.Gaussian(BASIS, y, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
 output
 
+
 CV2 <- EBlassoNEG.GaussianCV(geno, pheno, nFolds = 3, Epis = "no")
 output <- EBlassoNEG.Gaussian(geno, pheno, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
 output
@@ -141,4 +142,11 @@ output
 CV3 <- EBlassoNEG.GaussianCV(br_geno, br_pheno, nFolds = 3, Epis = "no")
 output3 <- EBlassoNEG.Gaussian(br_geno, br_pheno, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
 output3
+plot
+
+CV4 <- EBelasticNet.GaussianCV(br_geno, br_pheno, nFolds = 3, Epis = "no")
+CV4
+?EBelasticNet.Gaussian
+output4 <- EBelasticNet.Gaussian(br_geno, br_pheno, lambda = 0.1, alpha = 0.1, Epis = "no")
+output4
 # gets close, but picks 1 or two bins over
