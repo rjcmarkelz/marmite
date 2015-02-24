@@ -75,6 +75,7 @@ head(design)
 
 # group model for eQTL
 group_design <- model.matrix(~ 0 + Br_group)
+
 head(group_design)
 colnames(group_design)
 
@@ -121,12 +122,29 @@ brass_dup$consensus.correlation
 
 # this should take a while
 system.time(brass_fit <- lmFit(brass_voom, block = Br_rep,
-             design = design, correlation=brass_dup$consensus.correlation))
+             design = design, correlation = brass_dup$consensus.correlation))
+
+summary(brass_fit)
+brass_fit <- eBayes(brass_fit)
+topTable(brass_fit)
 
 
 
+# group model for eQTL
+system.time(brass_voom_group <- voom(brassica_DE, group_design, plot = TRUE))
 
+system.time(brass_group_dup <- duplicateCorrelation(brass_voom, design = group_design, block = Br_rep))
 
+str(brass_dup)
+brass_dup$consensus.correlation
+
+# this should take a while
+system.time(brass_group_fit <- lmFit(brass_voom_group, block = Br_rep,
+             design = group_design, correlation = brass_group_dup$consensus.correlation))
+
+summary(brass_group_fit)
+brass_group_fit <- eBayes(brass_group_fit)
+topTable(brass_group_fit)
 
 
 
