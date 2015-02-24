@@ -80,12 +80,12 @@ contrasts(Br_RIL) <- contr.sum(122)
 
 
 # full model
-design <- model.matrix(~0 + Br_RIL*Br_trt)
+design <- model.matrix(~ 0 + Br_RIL*Br_trt)
 colnames(design)
 head(design)
 
 # group model for eQTL
-group_design <- model.matrix(~0 + Br_group)
+group_design <- model.matrix(~ 0 + Br_group)
 head(group_design)
 
 ######

@@ -50,14 +50,17 @@ colnames(mapped_counts)
 samples <- as.data.frame(names(mapped_counts))
 samples
 
-Br_group <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+Br_group  <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
                        "\\2\\3\\4", colnames(mapped_counts)))
 Br_group2 <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
                        "\\2\\3\\4\\5\\7", colnames(mapped_counts)))
-Br_RIL   <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+Br_RIL    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
                        "\\2", colnames(mapped_counts)))
-Br_trt <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+Br_trt    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
                        "\\4", colnames(mapped_counts)))
+Br_rep    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\7", colnames(mapped_counts)))
+Br_rep
 Br_group 
 Br_group2
 Br_RIL  # 122 levels
@@ -73,15 +76,14 @@ head(design)
 # group model for eQTL
 group_design <- model.matrix(~ 0 + Br_group)
 head(group_design)
+colnames(group_design)
+
 
 # edgeR and Limma
 library(edgeR)
 library(limma)
 
-?duplicateCorrelation
-# look for correlation between replicates
-
-brassica_DE <- DGEList(counts = mapped_counts, group = Br_group2)
+brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
 brassica_DE$samples
 
 dim(brassica_DE)
@@ -92,19 +94,43 @@ brassica_DE <- brassica_DE[rowSums(cpm(brassica_DE) > 1 ) >= 20,]
 dim(brassica_DE)
 #[1] 35039   835
 
-
 brassica_DE <- calcNormFactors(brassica_DE)
-
+brassica_DE
+str(brassica_DE)
 # output plots, they are much to large to fit into memory
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
 png(file = "Brassica_MDS_allele_specific.png", width = 1000, height = 1000, res = 100)
 plotMDS(brassica_DE)
 dev.off()
 
-system.time(brass_voom <- voom(brassica_DE, group_design, plot = TRUE))
+system.time(brass_voom <- voom(brassica_DE, design, plot = TRUE))
 # Coefficients not estimable: ril234:trtCR ril311:trtCR 
 # removed these above from analysis because causes issues in convergence
-
+str(brass_voom)
 
 ?lmFit
+?duplicateCorrelation
+# look for correlation between replicates
+# must account for in linear model
+system.time(brass_dup <- duplicateCorrelation(brass_voom, design = design, block = Br_rep))
+#     user   system  elapsed 
+# 1509.105  114.936 1614.638
+
+str(brass_dup)
+brass_dup$consensus.correlation
+
+# this should take a while
+system.time(brass_fit <- lmFit(brass_voom, block = Br_rep,
+             design = design, correlation=brass_dup$consensus.correlation))
+
+
+
+
+
+
+
+
+
+
+
 
