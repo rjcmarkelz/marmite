@@ -127,7 +127,8 @@ system.time(brass_fit <- lmFit(brass_voom, block = Br_rep,
 summary(brass_fit)
 brass_fit <- eBayes(brass_fit)
 topTable(brass_fit)
-
+TT_brass_fit <- topTable(brass_fit)
+head(TT_brass_fit)[,1:5]
 
 
 # group model for eQTL
@@ -144,9 +145,41 @@ brass_dup$consensus.correlation
 system.time(brass_group_fit <- lmFit(brass_voom_group, block = Br_rep,
              design = group_design, correlation = brass_group_dup$consensus.correlation))
 
+#     user   system  elapsed 
+# 8855.623  544.291 9359.772 
+
 summary(brass_group_fit)
 brass_group_fit <- eBayes(brass_group_fit)
-topTable(brass_group_fit)
+?topTable
+TT_brass_group <- topTable(brass_group_fit)
+head(TT_brass_group)[,1:5]
+summary(brass_group_fit)
+dim(brass_group_fit$coefficients)
+# [1] 35039   244
+
+
+colnames(brass_group_fit$coefficients)
+br_un_cr    <- factor(sub("(Br_)(group)(\\d+)(_)(\\w+)",
+                       "\\5", colnames(brass_group_fit$coefficients)))
+br_un_cr
+br_un_cr_num <- as.numeric(br_un_cr)
+str(br_un_cr_num)
+br_un_cr_num <- replace(br_un_cr_num, br_un_cr_num == -1, 0)
+?makeContrasts
+
+
+group_fit_trt <- contrasts.fit(brass_group_fit, br_un_cr_num)
+group_fit_trt <- eBayes(group_fit_trt)
+topTable(group_fit_trt, number = 20)
+str(group_fit_trt)
+summary(group_fit_trt)
+topTable(brass_group_fit, levels = group_design, )
+brass_group_fit$coefficients["Bra011398",1:10]
+
+# sanity check
+colnames(mapped_counts)
+brass_subset <- mapped_counts[,1:51]
+head(brass_subset)
 
 
 
