@@ -134,6 +134,8 @@ topTable(brass_fit)
 system.time(brass_voom_group <- voom(brassica_DE, group_design, plot = TRUE))
 
 system.time(brass_group_dup <- duplicateCorrelation(brass_voom, design = group_design, block = Br_rep))
+    # user   system  elapsed 
+# 1406.919  120.018 1518.139 
 
 str(brass_dup)
 brass_dup$consensus.correlation
