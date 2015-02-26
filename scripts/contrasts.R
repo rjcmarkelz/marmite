@@ -147,34 +147,57 @@ topTable(trt_cont, coef=1, adjust="BH")
 ##########
 # whole dataset treatment model
 ##########
+Br_group  <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\2\\3\\4", colnames(mapped_counts)))
+Br_RIL    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\2", colnames(mapped_counts_sub)))
+Br_trt    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\4", colnames(mapped_counts)))
+Br_rep    <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\7", colnames(mapped_counts_sub)))
+Br_rep
+Br_group 
+Br_group2
+Br_RIL  
+length(Br_RIL)
+Br_trt <- relevel(Br_trt, ref = "UN")
+Br_trt
+
+# full model
+design <- model.matrix(~ 0 + Br_RIL*Br_trt)
+colnames(design)
+head(design)
+
+trt_design <- model.matrix(~ 0 + Br_trt)
+colnames(trt_design)
+head(trt_design)
+dim(trt_design)
+
 brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
 brassica_DE$samples
 
 dim(brassica_DE)
-# [1] 43150    51
+# [1] 43150    835
 
 # keep genes with at least 1 count per million in at least 20 samples
 brassica_DE <- brassica_DE[rowSums(cpm(brassica_DE) > 1 ) >= 20,]
 dim(brassica_DE)
-# [1] 27999    51
+# [1] 35039   835
 
 brassica_DE <- calcNormFactors(brassica_DE)
 brassica_DE
 str(brassica_DE)
 
 system.time(brass_voom <- voom(brassica_DE, trt_design, plot = TRUE))
-# Coefficients not estimable: ril234:trtCR ril311:trtCR 
-# removed these above from analysis because causes issues in convergence
 str(brass_voom)
 
 ?lmFit
-?duplicateCorrelation
+# ?duplicateCorrelation
 # look for correlation between replicates
 # must account for in linear model
-system.time(brass_dup <- duplicateCorrelation(brass_voom, design = design, block = Br_rep))
-
-str(brass_dup)
-brass_dup$consensus.correlation
+# system.time(brass_dup <- duplicateCorrelation(brass_voom, design = design, block = Br_rep))
+# str(brass_dup)
+# brass_dup$consensus.correlation
 
 system.time(brass_fit <- lmFit(brass_voom, design = trt_design))
 
@@ -188,25 +211,65 @@ contrast.matrix
 
 trt_cont <- contrasts.fit(brass_fit, contrast.matrix)
 trt_cont <- eBayes(trt_cont)
-topTable(trt_cont, coef=1, adjust="BH", number = 100)
+topTable(trt_cont, coef = 1, adjust = "BH", number = 100)
 
 #########
 #### go enrichment cr vs un
-#### need to install GO.db, but froze R
 #########
 library(Biostrings)
 library(GO.db)
 library(goseq)
 
-trt_cont_go <- topTable(trt_cont, coef=1, adjust="BH", number = Inf)
+trt_cont_go <- topTable(trt_cont, coef = 1, adjust = "BH", number = Inf)
 head(trt_cont_go)
+dim(trt_cont_go)
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+?write.csv
+write.table(trt_cont_go, "un_vs_cr_DE_nodupcorr_model.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
 
+# infile and manipulate go annotation file
+setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
+brass_go <- read.table("Brassica_rapa_v1.5_final_annot.wego", header = FALSE)
+head(brass_go)
+colnames(brass_go) <- c("Gene", "GO")
+dim(brass_go)
+# make list object to store data
+brass_go_list <- strsplit(as.character(brass_go[,2]),split=",",fixed=T)
+head(brass_go_list)
+names(brass_go_list) <- as.character(brass_go[,1])
+head(brass_go_list)
+length(brass_go_list)
 
+# also need to infile the gene length data as goseq uses this to estimate any biases based on gene
+# lengths in the dataset. 
+brass_gene_lengths <- read.table("Brassica_rapa_v1.5_final_gene_lengths", header = FALSE)
+head(brass_gene_lengths)
+colnames(brass_gene_lengths) <- c("Gene", "length")
+dim(brass_gene_lengths)
+str(brass_gene_lengths)
+# [1] 43463     2
+brass_gene_lengths$Gene <- as.character(brass_gene_lengths$Gene)
 
+# subset brass_gene_lengths for signifcant genes that were actually tested in the linear model
+trt_cont_go$Gene <- rownames(trt_cont_go)
+keeps <- as.character(trt_cont_go$Gene)
+head(keeps)
+head(trt_cont_go)
+str(trt_cont_go)
+brass_gene_lengths_red <- brass_gene_lengths[brass_gene_lengths$Gene %in% keeps,]
+dim(brass_gene_lengths_red)
+# [1] 35039     2
 
+dim(trt_cont_go)
+# [1] 35039     7
+# conservative subset
+brass_genes_sig <- subset(trt_cont_go, adj.P.Val < 0.0001)
+dim(brass_genes_sig)
+# [1] 5257    7
 
-
+?nullp
 
 
 
