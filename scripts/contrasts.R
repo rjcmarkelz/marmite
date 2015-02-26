@@ -1,7 +1,7 @@
 ##########
 # Cody Markelz
 # markelz@gmail.com
-# double check contrast statements 
+# double check contrast statements and play with go enrichment for RNA-seq
 # this is the same pipeline as allele specific
 # 2015_02_25
 ##########
@@ -265,11 +265,39 @@ dim(brass_gene_lengths_red)
 dim(trt_cont_go)
 # [1] 35039     7
 # conservative subset
-brass_genes_sig <- subset(trt_cont_go, adj.P.Val < 0.0001)
-dim(brass_genes_sig)
+brass_genes_sig_keeps <- subset(trt_cont_go, adj.P.Val < 0.001)
+dim(brass_genes_sig_keeps)
+head(brass_genes_sig_keeps)
 # [1] 5257    7
+sig_gene_names <- as.character(brass_genes_sig_keeps$Gene)
 
+brass_genes_sig     <- brass_gene_lengths_red[(brass_gene_lengths_red$Gene %in% sig_gene_names),]
+head(brass_genes_not_sig)
+dim(brass_genes_sig)
+brass_genes_not_sig <- brass_gene_lengths_red[!(brass_gene_lengths_red$Gene %in% sig_gene_names),]
+head(brass_genes_not_sig)
+dim(brass_genes_not_sig)
+
+nullp_vector <- rep(c(1,0),c(nrow(brass_genes_sig), nrow(brass_genes_not_sig)))
+head(nullp_vector)
+tail(nullp_vector)
+names(nullp_vector) <- c(brass_genes_sig$Gene, brass_genes_not_sig$Gene)
+
+bias_data_vector <- c(brass_genes_sig$length, brass_genes_not_sig$length)
+head(bias_data_vector)
+?rep
 ?nullp
+
+brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_data_vector)
+# Warning message:
+# In pcls(G) : initial point very close to some inequality constraints
+
+?goseq
+# need to decide whether or not to use the useuse_genes_without_cat=TRUE option. 
+# ~8000 genes not included in analysis that do not have a GO category classification
+go_analysis_cr_un  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
+head(go_analysis_cr_un, 100)
+
 
 
 
