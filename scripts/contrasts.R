@@ -260,6 +260,7 @@ head(trt_cont_go)
 str(trt_cont_go)
 brass_gene_lengths_red <- brass_gene_lengths[brass_gene_lengths$Gene %in% keeps,]
 dim(brass_gene_lengths_red)
+head(brass_gene_lengths_red)
 # [1] 35039     2
 
 dim(trt_cont_go)
@@ -298,6 +299,101 @@ brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_da
 go_analysis_cr_un  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
 head(go_analysis_cr_un, 100)
 
+#############
+# promotor enrichment, orginal code from Julin Maloof
+#############
+library(Biostrings)
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+head(brass_genes_sig)
+
+universe <- brass_gene_lengths_red$Gene
+target   <- brass_genes_sig$Gene
+
+
+motifs <- read.delim("element_name_and_motif_IUPACsupp.txt", header = FALSE, as.is = TRUE)
+#convert motifs to a format the Biostrings likes
+head(motifs)
+motifsV <- as.character(motifs[,2])
+names(motifsV) <- motifs[,1]
+motifsSS <- DNAStringSet(motifsV)
+motifsSS
+
+setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
+
+promoters <- readDNAStringSet("Brapa_1000bp_upstream_3.fa")
+head(promoters)
+#convert "N" to "-" in promoters.  otherwise motifs will match strings of "N"s
+promoters <- DNAStringSet(gsub("N","-",promoters))
+
+universe_promoters <- promoters[universe]
+target_promoters <- promoters[target]
+
+
+#now for each motif ask how many occurences in trans and in universe.  Are they different?
+#note: to apply the hyperGeometric distibution it seems that rather than counting occurences
+#we should count the number of promoters that have an occurence.
+
+#create a function to summarize the resutls and test for significance
+get.results <- function(set,universe,label=NULL,all.counts=F) {
+  if (all.counts) { 
+    #count all occurences of a motif instead of the number of promoters that it occurs in
+    set.sum <- apply(set,1,sum)
+    universe.sum <- apply(universe,1,sum)
+  } else {
+    set.sum <- apply(ifelse(set > 0,1,0),1,sum)
+    universe.sum <- apply(ifelse(universe > 0 , 1, 0),1,sum)
+  }
+  n.motifs <- length(set.sum)
+  results <- vector(mode="numeric",length=n.motifs)
+  for (i in 1:n.motifs) {
+    if (all.counts) { #the contigency tables are different depending on whether we are looking at promoters or overall occurences
+      #test if ratio of occurences to promoters is the same in the set and the universe
+      m <- matrix(c(
+        set.sum[i],                       #number of occurences within set
+        dim(set)[2],                      #number of promoters in set
+        universe.sum[i],                  #number of occurences within universe
+        dim(universe)[2]                  #number of promoters in universe
+      ),ncol=2)
+    } else { #looking at promoters with and without hits
+      m <- matrix(c(
+        set.sum[i],                        #number of promoters in set with hit
+        dim(set)[2]-set.sum[i],            #number of promoters in set with no hit
+        universe.sum[i],                   #number of promoters in universe with hit
+        dim(universe)[2]-universe.sum[i]   #number of promoters in universe with no hit
+      ),ncol=2)
+    } #else
+    results[i] <- fisher.test(m,alternative="greater")$p.value
+  } #for loop
+  results.table <- cbind(round(universe.sum/dim(universe)[2],3)*100,
+                         round(set.sum/dim(set)[2],3)*100,
+                         results)
+  colnames(results.table) <- paste(label,c("%universe","%set","p.value"),sep=".")
+  results.table
+}
+
+
+#We use the vcountPDict function to count the number of occurences
+#Note that we have to reverse complement as well
+target_counts <- vcountPDict(motifsSS, target_promoters, fixed = FALSE) + 
+  vcountPDict(motifsSS, reverseComplement(target_promoters), fixed = FALSE)
+
+universe_counts <- vcountPDict(motifsSS,universe_promoters, fixed = FALSE) + 
+  vcountPDict(motifsSS, reverseComplement(universe_promoters), fixed = FALSE)
+
+#write out table of counts
+write.csv(rbind(target,target_counts),file="target_counts.csv",row.names=c("", names(motifsSS)))
+
+#get results table with p-values
+results <- cbind(motifs, get.results(target_counts, universe_counts,"brass_cr_un"))
+head(results)
+results[order(results$brass_cr_un.p.value),]
+write.csv(results[order(results$brass_cr_un.p.value),],"brass_cr_un_motifs.csv")
+
+#repeat, including multiple occurences of the site
+results_mult <- cbind(motifs, get.results(target_counts,universe_counts,"brass_cr_un", all.counts=T))
+results_mult[order(results_mult$brass_cr_un.p.value),]
+
+write.csv(results_mult[order(results_mult$brass_cr_un.p.value),],"brass_cr_un_motifs_mult_up.csv")
 
 
 
