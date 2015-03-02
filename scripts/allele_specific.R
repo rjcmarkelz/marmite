@@ -220,13 +220,91 @@ brass_group_sub <- head(brass_group_coef, 10)
 
 head(brass_group_sub)
 head(gene_cont_sub)
+
 rownames(gene_cont_sub) <- gene_cont_sub$tx_name
 
+# subset for each treatment
+brass_group_un <- as.data.frame(brass_group_sub[, grep("*_UN", colnames(brass_group_sub))])
+brass_group_un 
+str(brass_group_un)
+brass_group_cr <- brass_group_sub[, grep("*_CR", colnames(brass_group_sub))]
+brass_group_cr
+
+colnames(brass_group_un) <- sub("(Br_group)(\\d+)(_)(UN)", "RIL_\\2", colnames(brass_group_un))
+head(brass_group_un)
+dim(brass_group_un)
+dim(gene_cont_sub)
+
+#remove tx_name column
+gene_cont_sub <- gene_cont_sub[, -1]
+dim(gene_cont_sub)
+
+gene_cont_sub <- subset(gene_cont_sub, select = colnames(brass_group_un))
+dim(gene_cont_sub)
+head(gene_cont_sub)
+head(brass_group_un)
+library(genefilter)
+# ?rowttests
+# rowttests
+# rowttests(brass_group_un, gene_cont_sub, tstatOnly = FALSE)
+?tapply
+str(brass_group_un)
+brass_group_un <- as.data.frame(t(brass_group_un))
+str(brass_group_un)
+gene_cont_sub <- as.data.frame(t(gene_cont_sub))
+str(gene_cont_sub)
+str(brass_group_un[1,])
+gene_cont_sub[2,]
+
+gene_cont_sub[2,]
+brass_group_un[1,]
+gene_cont_sub$Bra000002
+brass_group_un$Bra000002
+brass_names <- names(brass_group_un)
+str(brass_names)
+for()
+
+brass_names <- paste("Bra000002")
+brass_names
+brass_group_un
+gene_cont_sub
+tapply(brass_group_un$Bra000010, INDEX = gene_cont_sub$Bra000010,  FUN = mean)
+
+length(brass_names)
+brass_names
+brass_names <- brass_names[1:3]
+brass_names[2]
+
+for (j in brass_names){
+    print(j)
+    test <- tapply(brass_group_un[,j], INDEX = gene_cont_sub[,j],  FUN = mean)
+    print(test)
+}
+
+
+	
+    test
+test
+test2
+
+tapply(brass_group_un[1,], INDEX = gene_cont_sub[2,],  FUN = mean)
+?mean
+
+
+x  <- matrix(runif(40), nrow=4, ncol=10)
+x
+f2 <- factor(floor(runif(ncol(x))*2))
+f2
+f4 <- factor(floor(runif(ncol(x))*4))
+f4
+r1 <- rowttests(x)
+r2 <- rowttests(x, f2)
+r4 <- rowFtests(x, f4)
+r1
+r2
+r4
 #issues
 # genes not represented in each row of the matrix and the coef df
-# calculate for each treatment condition?
-# subset coef df and make one for cr and one for un
-
 
 
 t.test_results <- mapply(t.test, x= df1_t, y = df2_t, SIMPLIFY = F)
