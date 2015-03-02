@@ -160,7 +160,7 @@ dim(brass_group_fit$coefficients)
 
 brass_group_coef <- brass_group_fit$coefficients
 dim(brass_group_coef)
-head(brass_group_coef)[,1:5]
+head(brass_group_coef)
 
 write.table()
 
@@ -169,7 +169,10 @@ write.table()
 write.table(brass_group_coef, "brassica_mixed_group_fit_coef.csv", row.names = TRUE, sep = ",")
 #save output object 
 save(brass_group_fit, file = "brass_group_fit_object.RData")
-
+# also save the tstats
+brass_group_tstats <- brass_group_fit$t
+head(brass_group_tstats)
+write.table(brass_group_tstats, "brassica_mixed_group_fit_tstats.csv", row.names = TRUE, sep = ",")
 
 
 
@@ -196,7 +199,37 @@ colnames(mapped_counts)
 brass_subset <- mapped_counts[,1:51]
 head(brass_subset)
 
+#FINALLY SOME ASE
+# pull in contrast matrix that has the 1 or 0 based on genotype of each gene in each RIL
+setwd("/Users/Cody_2/git.repos/brassica_genetic_map/Input")
+gene_contrasts <- read.table("gene_marker_contrast_matrix_long.csv", sep = ",", header = TRUE)
+head(gene_contrasts)
 
+#order by gene name to make small test
+gene_contrasts <- gene_contrasts[order(gene_contrasts$tx_name),]
+head(gene_contrasts)
+
+gene_cont_sub <- head(gene_contrasts, 10)
+gene_cont_sub
+dim(gene_cont_sub)
+
+# order by gene name to get small test working
+head(brass_group_coef)
+brass_group_coef <- brass_group_coef[order(rownames(brass_group_coef)),]
+brass_group_sub <- head(brass_group_coef, 10)
+
+head(brass_group_sub)
+head(gene_cont_sub)
+rownames(gene_cont_sub) <- gene_cont_sub$tx_name
+
+#issues
+# genes not represented in each row of the matrix and the coef df
+# calculate for each treatment condition?
+# subset coef df and make one for cr and one for un
+
+
+
+t.test_results <- mapply(t.test, x= df1_t, y = df2_t, SIMPLIFY = F)
 
 
 
