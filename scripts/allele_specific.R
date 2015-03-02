@@ -156,6 +156,21 @@ head(TT_brass_group)[,1:5]
 summary(brass_group_fit)
 dim(brass_group_fit$coefficients)
 # [1] 35039   244
+# write the coefficients to file
+
+brass_group_coef <- brass_group_fit$coefficients
+dim(brass_group_coef)
+head(brass_group_coef)[,1:5]
+
+write.table()
+
+# output model fit that takes into account correlation between replicates of the same 
+# RIL 3-5 reps per genotype.
+write.table(brass_group_coef, "brassica_mixed_group_fit_coef.csv", row.names = TRUE, sep = ",")
+#save output object 
+save(brass_group_fit, file = "brass_group_fit_object.RData")
+
+
 
 
 colnames(brass_group_fit$coefficients)
