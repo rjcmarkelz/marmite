@@ -276,12 +276,59 @@ brass_names <- brass_names[1:3]
 brass_names[2]
 
 for (j in brass_names){
-    print(j)
-    test <- tapply(brass_group_un[,j], INDEX = gene_cont_sub[,j],  FUN = mean)
+    test <- tapply(brass_group_un[,j], gene_cont_sub[,j],  FUN = mean)
     print(test)
+} 
+
+
+
+mylist <- sapply(brass_names,function(x) NULL)
+mylist[1]
+for (j in brass_names){
+    test <- aggregate(brass_group_un[,j], by = list(gene_cont_sub[,j]),  FUN = mean)
+    test
+    mylist <- c(mylist, test)
 }
 
+brass_names
+mylist <- list()
+brass_pvalues <- list()
+for (j in brass_names){
+    exp_means <- as.data.frame(tapply(brass_group_un[,j], INDEX = list(gene_cont_sub[,j]),  FUN = mean))
+    names(exp_means) <- j
+    brassfac <- as.factor(gene_cont_sub[,j])
+    testfacout <- t.test(brass_group_un[,j] ~ brassfac)
+    brass_pvalues <- c(brass_pvalues,testfacout$p.value)
+    exp_means_p <- c(exp_means, testfacout$p.value)
+    mylist <- c(mylist, exp_means_p)
+}
+mylist
+exp_means_p
 
+str(mylist)
+brass_pvalues
+mylist <- list()
+str(mylist)
+?list
+hist(brass_group_un)
+exp_means <- as.data.frame(tapply(brass_group_un[,"Bra000002"], INDEX = list(gene_cont_sub[,"Bra000002"]),  FUN = mean))
+exp_means
+out <- tapply(brass_group_un[,"Bra000002"],  gene_cont_sub[,"Bra000002"], FUN = function(x) tt = t.test())
+str(out)
+out
+out$'1'$p.value
+
+testfac <- as.factor(gene_cont_sub[,"Bra000002"])
+testfac
+testfacout <- t.test(brass_group_un[,"Bra000002"] ~ testfac)
+testfacout$p.value
+
+?t.test
+str(test)
+mylist
+myunlist <- as.data.frame(unlist(mylist))
+myunlist
+test
 	
     test
 test
