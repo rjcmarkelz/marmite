@@ -213,72 +213,89 @@ head(gene_contrasts)
 gene_contrasts <- gene_contrasts[order(gene_contrasts$tx_name),]
 head(gene_contrasts)
 
-gene_cont_sub <- head(gene_contrasts, 10)
-gene_cont_sub
-dim(gene_cont_sub)
+
 
 # order by gene name to get small test working
 head(brass_group_coef)
-brass_group_coef <- brass_group_coef[order(rownames(brass_group_coef)),]
-brass_group_sub <- head(brass_group_coef, 10)
+dim(brass_group_coef)
 
-head(brass_group_sub)
-head(gene_cont_sub)
+# small subset for testing
+#brass_group_coef <- brass_group_coef[order(rownames(brass_group_coef)),]
+#brass_group_sub <- head(brass_group_coef, 10)
+# gene_cont_sub <- head(gene_contrasts, 10)
+# gene_cont_sub
+# dim(gene_cont_sub)
+
+head(brass_group_coef)
+head(gene_contrasts)
 
 # subset for each treatment
-brass_group_un <- as.data.frame(brass_group_sub[, grep("*_UN", colnames(brass_group_sub))])
-brass_group_un 
+brass_group_un <- as.data.frame(brass_group_coef[, grep("*_UN", colnames(brass_group_coef))])
+head(brass_group_un)
 str(brass_group_un)
-brass_group_cr <- brass_group_sub[, grep("*_CR", colnames(brass_group_sub))]
-brass_group_cr
+brass_group_cr <- brass_group_coef[, grep("*_CR", colnames(brass_group_coef))]
+head(brass_group_cr)
 
+#########
+# write files
+#########
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+write.table(brass_group_un, "brass_group_uncrowded_coef.csv", sep = ",", col.names = TRUE, row.names = TRUE)
+write.table(brass_group_cr, "brass_group_crowded_coef.csv", sep = ",", col.names = TRUE, row.names = TRUE)
+
+
+#rename columns
 colnames(brass_group_un) <- sub("(Br_group)(\\d+)(_)(UN)", "RIL_\\2", colnames(brass_group_un))
 head(brass_group_un)
 dim(brass_group_un)
-dim(gene_cont_sub)
+dim(gene_contrasts)
 
 # make first column the rownames
-rownames(gene_cont_sub) <- gene_cont_sub$tx_name
+rownames(gene_contrasts) <- gene_contrasts$tx_name
 
 #remove tx_name column
-gene_cont_sub <- gene_cont_sub[, -1]
-dim(gene_cont_sub)
+gene_contrasts <- gene_contrasts[, -1]
+dim(gene_contrasts)
 
 # make sure both have the same RILs
-gene_cont_sub <- subset(gene_cont_sub, select = colnames(brass_group_un))
-brass_group_un <- subset(brass_group_un, select = colnames(gene_cont_sub))
+ril_names <- intersect(colnames(brass_group_un), colnames(gene_contrasts))
+gene_contrasts <- subset(gene_contrasts, select = ril_names)
+brass_group_un <- subset(brass_group_un, select = ril_names)
 
-dim(gene_cont_sub)
-head(gene_cont_sub)
+
+dim(gene_contrasts)
+head(gene_contrasts)
 head(brass_group_un)
+dim(brass_group_un)
 
 #transpose to apply column wide functions
 brass_group_un <- as.data.frame(t(brass_group_un))
 str(brass_group_un)
-gene_cont_sub <- as.data.frame(t(gene_cont_sub))
-str(gene_cont_sub)
+gene_contrasts <- as.data.frame(t(gene_contrasts))
+str(gene_contrasts)
 
 # only compared genes in both sets
 colnames(brass_group_un)
-colnames(gene_cont_sub)
-brass_names <- intersect(colnames(brass_group_un), colnames(gene_cont_sub))
+colnames(gene_contrasts)
+brass_names <- intersect(colnames(brass_group_un), colnames(gene_contrasts))
 
 # vector of common gene names
-brass_names
+length(brass_names)
+# 20851
 
-#make some empty lists
+# make some empty lists
+# might take a while to run as code is not optimized for speed for this one time task
 mylist <- list()
 brass_pvalues <- list()
 brass_tvalues <- list()
 
 for (i in brass_names){
     #calculate means
-    exp_means <- as.data.frame(tapply(brass_group_un[,i], INDEX = list(gene_cont_sub[,i]),  FUN = mean))
+    exp_means <- as.data.frame(tapply(brass_group_un[,i], INDEX = list(gene_contrasts[,i]),  FUN = mean))
     names(exp_means) <- i
     mylist <- c(mylist, exp_means)
-
     #t.test for pvalues
-    brassfac <- as.factor(gene_cont_sub[,i])
+    brassfac <- as.factor(gene_contrasts[,i])
     testfacout <- t.test(brass_group_un[,i] ~ brassfac)
     out_p <- testfacout$p.value
     names(out_p) <- i
@@ -289,14 +306,14 @@ for (i in brass_names){
     
 }
 
-#make dataframes
-mylist
+#make dataframes from list outputs
+head(mylist)
 mlistdf <- data.frame(t(sapply(mylist, c)))
 brass_p_df <- data.frame(sapply(brass_pvalues, c))
 brass_t_df <- data.frame(sapply(brass_tvalues, c))
-mlistdf
-brass_t_df
-brass_p_df
+head(mlistdf)
+head(brass_t_df)
+head(brass_p_df)
 #double check before merge
 rownames(mlistdf)
 rownames(brass_p_df)
@@ -310,11 +327,13 @@ colnames(brass_merge) <- c("gene_name", "R500", "IMB211", "t_stat", "p_value")
 
 # adjust for multiple testing
 brass_merge$p_adjusted <- p.adjust(brass_merge$p_value, method = "BY", n = length(brass_merge$p_value))
-brass_merge
+head(brass_merge)
 
 #print dataframe to .csv file
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 write.table(brass_merge, "allele_specific_test_p_adjusted.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+
 
 
 
