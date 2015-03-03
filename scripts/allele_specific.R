@@ -199,8 +199,12 @@ colnames(mapped_counts)
 brass_subset <- mapped_counts[,1:51]
 head(brass_subset)
 
+#################
+#################
 #FINALLY SOME ASE
 # pull in contrast matrix that has the 1 or 0 based on genotype of each gene in each RIL
+#################
+#################
 setwd("/Users/Cody_2/git.repos/brassica_genetic_map/Input")
 gene_contrasts <- read.table("gene_marker_contrast_matrix_long.csv", sep = ",", header = TRUE)
 head(gene_contrasts)
@@ -221,8 +225,6 @@ brass_group_sub <- head(brass_group_coef, 10)
 head(brass_group_sub)
 head(gene_cont_sub)
 
-rownames(gene_cont_sub) <- gene_cont_sub$tx_name
-
 # subset for each treatment
 brass_group_un <- as.data.frame(brass_group_sub[, grep("*_UN", colnames(brass_group_sub))])
 brass_group_un 
@@ -235,72 +237,31 @@ head(brass_group_un)
 dim(brass_group_un)
 dim(gene_cont_sub)
 
+# make first column the rownames
+rownames(gene_cont_sub) <- gene_cont_sub$tx_name
+
 #remove tx_name column
 gene_cont_sub <- gene_cont_sub[, -1]
 dim(gene_cont_sub)
 
+# make sure both have the same RILs
 gene_cont_sub <- subset(gene_cont_sub, select = colnames(brass_group_un))
+brass_group_un <- subset(brass_group_un, select = colnames(gene_cont_sub))
+
 dim(gene_cont_sub)
 head(gene_cont_sub)
 head(brass_group_un)
-library(genefilter)
-# ?rowttests
-# rowttests
-# rowttests(brass_group_un, gene_cont_sub, tstatOnly = FALSE)
-?tapply
-str(brass_group_un)
+
+#transpose to apply column wide functions
 brass_group_un <- as.data.frame(t(brass_group_un))
 str(brass_group_un)
 gene_cont_sub <- as.data.frame(t(gene_cont_sub))
 str(gene_cont_sub)
-str(brass_group_un[1,])
-gene_cont_sub[2,]
 
-gene_cont_sub[2,]
-brass_group_un[1,]
-gene_cont_sub$Bra000002
-brass_group_un$Bra000002
-brass_names <- names(brass_group_un)
-str(brass_names)
-for()
-
-brass_names <- paste("Bra000002")
-brass_names
-brass_group_un
-gene_cont_sub
-tapply(brass_group_un$Bra000010, INDEX = gene_cont_sub$Bra000010,  FUN = mean)
-
-length(brass_names)
-brass_names
-brass_names <- brass_names[1:3]
-brass_names[2]
-
-for (j in brass_names){
-    test <- tapply(brass_group_un[,j], gene_cont_sub[,j],  FUN = mean)
-    print(test)
-} 
-
-
-
-mylist <- sapply(brass_names,function(x) NULL)
-mylist[1]
-for (j in brass_names){
-    test <- aggregate(brass_group_un[,j], by = list(gene_cont_sub[,j]),  FUN = mean)
-    test
-    mylist <- c(mylist, test)
-}
-
-mylist <- list()
-brass_pvalues <- list()
-for (j in brass_names){
-    #calculate means
-    exp_means <- as.data.frame(tapply(brass_group_un[,j], INDEX = list(gene_cont_sub[,j]),  FUN = mean))
-    names(exp_means) <- j
-    mylist <- c(mylist, exp_means)
-    
-}
-
-mylist
+# only compared genes in both sets
+colnames(brass_group_un)
+colnames(gene_cont_sub)
+brass_names <- intersect(colnames(brass_group_un), colnames(gene_cont_sub))
 
 # vector of gene names
 brass_names
@@ -315,12 +276,10 @@ for (i in brass_names){
     names(exp_means) <- i
     mylist <- c(mylist, exp_means)
 
-    #t.test
+    #t.test for pvalues
     brassfac <- as.factor(gene_cont_sub[,i])
     testfacout <- t.test(brass_group_un[,i] ~ brassfac)
-    # print(testfacout)
     out_p <- testfacout$p.value
-    print(out_p)
     names(out_p) <- i
     brass_pvalues <- c(brass_pvalues,out_p)
     
@@ -329,70 +288,19 @@ for (i in brass_names){
 #make dataframes
 mlistdf <- data.frame(t(sapply(mylist, c)))
 brass_p_df <- data.frame(sapply(brass_pvalues, c))
+
+#double check before merge
 rownames(mlistdf)
 rownames(brass_p_df)
 
 #merge dataframes based on row name
 brass_merge <- merge(mlistdf, brass_p_df, by = "row.names")
 brass_merge
+colnames(brass_merge) <- c("gene_name", "R500", "IMB211", "p.value")
 
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+write.table(brass_merge, "allele_specific_test.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
-brass_pvalues
-exp_means_p
-
-j
-j <- "Bra000002"
-
-str(mylist)
-brass_pvalues
-mylist <- list()
-str(mylist)
-?list
-hist(brass_group_un)
-exp_means <- as.data.frame(tapply(brass_group_un[,"Bra000002"], INDEX = list(gene_cont_sub[,"Bra000002"]),  FUN = mean))
-exp_means
-out <- tapply(brass_group_un[,"Bra000002"],  gene_cont_sub[,"Bra000002"], FUN = function(x) tt = t.test())
-str(out)
-out
-out$'1'$p.value
-
-testfac <- as.factor(gene_cont_sub[,"Bra000002"])
-testfac
-testfacout <- t.test(brass_group_un[,"Bra000002"] ~ testfac)
-as.data.frame(testfacout$p.value)
-
-?t.test
-str(test)
-mylist
-myunlist <- as.data.frame(unlist(mylist))
-myunlist
-test
-	
-    test
-test
-test2
-
-tapply(brass_group_un[1,], INDEX = gene_cont_sub[2,],  FUN = mean)
-?mean
-
-
-x  <- matrix(runif(40), nrow=4, ncol=10)
-x
-f2 <- factor(floor(runif(ncol(x))*2))
-f2
-f4 <- factor(floor(runif(ncol(x))*4))
-f4
-r1 <- rowttests(x)
-r2 <- rowttests(x, f2)
-r4 <- rowFtests(x, f4)
-r1
-r2
-r4
-#issues
-# genes not represented in each row of the matrix and the coef df
-
-
-t.test_results <- mapply(t.test, x= df1_t, y = df2_t, SIMPLIFY = F)
 
 
 
