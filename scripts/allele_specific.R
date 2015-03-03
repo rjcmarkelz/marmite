@@ -334,11 +334,32 @@ setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 write.table(brass_merge, "allele_specific_test_p_adjusted.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 
+# quick data subset for brassica UV QTL
+setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
+brass_UV_7 <- read.table("gr7_3_candidates.txt", sep = " ")
+head(brass_UV_7)
+dim(brass_UV_7)
+# [1] 131   1
+str(brass_UV_7)
+brass_UV_7 <- as.character(brass_UV_7$x)
 
+brass_UV_8 <- read.table("gr8_2_candidates.txt", sep = " ")
+head(brass_UV_8)
+dim(brass_UV_8)
+# [1] 171   1
+brass_UV_8 <- as.character(brass_UV_8$x)
 
+brass_UV_7_exp <- brass_merge[brass_merge$gene_name %in% brass_UV_7,]
+head(brass_UV_7_exp)
+dim(brass_UV_7_exp)
+# [1] 106   6
+write.table(brass_UV_7_exp, "brass_UV_A07_peak_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
-
-
+brass_UV_8_exp <- brass_merge[brass_merge$gene_name %in% brass_UV_8,]
+head(brass_UV_8_exp)
+dim(brass_UV_8_exp)
+# [1] 102   6
+write.table(brass_UV_8_exp, "brass_UV_A08_peak_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 
 
