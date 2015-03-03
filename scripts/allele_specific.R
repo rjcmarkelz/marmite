@@ -263,12 +263,13 @@ colnames(brass_group_un)
 colnames(gene_cont_sub)
 brass_names <- intersect(colnames(brass_group_un), colnames(gene_cont_sub))
 
-# vector of gene names
+# vector of common gene names
 brass_names
 
 #make some empty lists
 mylist <- list()
 brass_pvalues <- list()
+brass_tvalues <- list()
 
 for (i in brass_names){
     #calculate means
@@ -282,24 +283,40 @@ for (i in brass_names){
     out_p <- testfacout$p.value
     names(out_p) <- i
     brass_pvalues <- c(brass_pvalues,out_p)
+    out_t <- testfacout$statistic
+    names(out_t) <- i
+    brass_tvalues <- c(brass_tvalues, out_t)
     
 }
 
 #make dataframes
+mylist
 mlistdf <- data.frame(t(sapply(mylist, c)))
 brass_p_df <- data.frame(sapply(brass_pvalues, c))
-
+brass_t_df <- data.frame(sapply(brass_tvalues, c))
+mlistdf
+brass_t_df
+brass_p_df
 #double check before merge
 rownames(mlistdf)
 rownames(brass_p_df)
 
 #merge dataframes based on row name
-brass_merge <- merge(mlistdf, brass_p_df, by = "row.names")
+brass_merge <- merge(mlistdf, brass_t_df, by = "row.names")
 brass_merge
-colnames(brass_merge) <- c("gene_name", "R500", "IMB211", "p.value")
+brass_merge <- merge(brass_merge, brass_p_df, by.x = "Row.names", by.y = "row.names")
+brass_merge
+colnames(brass_merge) <- c("gene_name", "R500", "IMB211", "t_stat", "p_value")
 
+# adjust for multiple testing
+brass_merge$p_adjusted <- p.adjust(brass_merge$p_value, method = "BY", n = length(brass_merge$p_value))
+brass_merge
+
+#print dataframe to .csv file
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
-write.table(brass_merge, "allele_specific_test.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+write.table(brass_merge, "allele_specific_test_p_adjusted.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+
 
 
 
