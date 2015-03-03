@@ -290,20 +290,58 @@ for (j in brass_names){
     mylist <- c(mylist, test)
 }
 
-brass_names
 mylist <- list()
 brass_pvalues <- list()
 for (j in brass_names){
+    #calculate means
     exp_means <- as.data.frame(tapply(brass_group_un[,j], INDEX = list(gene_cont_sub[,j]),  FUN = mean))
     names(exp_means) <- j
-    brassfac <- as.factor(gene_cont_sub[,j])
-    testfacout <- t.test(brass_group_un[,j] ~ brassfac)
-    brass_pvalues <- c(brass_pvalues,testfacout$p.value)
-    exp_means_p <- c(exp_means, testfacout$p.value)
-    mylist <- c(mylist, exp_means_p)
+    mylist <- c(mylist, exp_means)
+    
 }
+
 mylist
+
+# vector of gene names
+brass_names
+
+#make some empty lists
+mylist <- list()
+brass_pvalues <- list()
+
+for (i in brass_names){
+    #calculate means
+    exp_means <- as.data.frame(tapply(brass_group_un[,i], INDEX = list(gene_cont_sub[,i]),  FUN = mean))
+    names(exp_means) <- i
+    mylist <- c(mylist, exp_means)
+
+    #t.test
+    brassfac <- as.factor(gene_cont_sub[,i])
+    testfacout <- t.test(brass_group_un[,i] ~ brassfac)
+    # print(testfacout)
+    out_p <- testfacout$p.value
+    print(out_p)
+    names(out_p) <- i
+    brass_pvalues <- c(brass_pvalues,out_p)
+    
+}
+
+#make dataframes
+mlistdf <- data.frame(t(sapply(mylist, c)))
+brass_p_df <- data.frame(sapply(brass_pvalues, c))
+rownames(mlistdf)
+rownames(brass_p_df)
+
+#merge dataframes based on row name
+brass_merge <- merge(mlistdf, brass_p_df, by = "row.names")
+brass_merge
+
+
+brass_pvalues
 exp_means_p
+
+j
+j <- "Bra000002"
 
 str(mylist)
 brass_pvalues
@@ -321,7 +359,7 @@ out$'1'$p.value
 testfac <- as.factor(gene_cont_sub[,"Bra000002"])
 testfac
 testfacout <- t.test(brass_group_un[,"Bra000002"] ~ testfac)
-testfacout$p.value
+as.data.frame(testfacout$p.value)
 
 ?t.test
 str(test)
