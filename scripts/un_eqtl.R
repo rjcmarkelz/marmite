@@ -32,6 +32,8 @@ system.time(scanone_imp_tot <- scanone(brass_total, pheno.col = 1:35039,
 save.image(file = "un_eqtl.RData", version = NULL,
  ascii = FALSE, safe = TRUE)
 
+
+#use hotspot library to extract qtl for each gene
 library(qtlhot)
 set.seed(12345)
 
@@ -44,29 +46,29 @@ lod.thrs <- summary(permtest, alphas)
 # get 3% cutoff
 lod.thrs
 lod.thr <- lod.thrs[1]
-
+# decided to use more stringent cutoff, will use permuations once stopped running
 
 #reduce object size by getting removing NS peaks
-?highlod
-high1 <- highlod(scanone_imp_tot, lod.thr = lod.thr, drop.lod = 1.5)
+high1 <- highlod(scanone_imp_tot, lod.thr = 5, drop.lod = 0)
 dim(scanone_imp_tot)
 head(scanone_imp_tot)[1:10]
 
+#exploring high1 object to figure out how to subset it for what I want
 length(high1)
 class(high1)
 attributes(high1)
 max(high1, lod.thr = lod.thrs)
 head(high1)
-hots1 <- hotsize(high1, lod.thr = lod.thr)
-hots1
-
 head(high1$chr.pos)
-
 head(high1$highlod, 20)
 head(high1$names)
 
-high1$chr.pos
 
+#take a look at hotspots
+hots1 <- hotsize(high1, lod.thr = lod.thr)
+hots1
+
+#infile genomic coordinates of genes
 setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
 
 transcripts <- read.table("transcripts_eqtl_start_stop_eqtl.csv", sep = ",", header = TRUE)
@@ -74,44 +76,21 @@ head(transcripts)
 str(transcripts)
 dim(transcripts)
 # [1] 43463     6 
-# includes scaffolds
+# includes scaffolds, need to figure this out
 transcripts$tx_name <- as.character(transcripts$tx_name)
 transcripts$tx_chrom <- as.character(transcripts$tx_chrom)
 
-
-
-
-
-cistrans_calc <- function(scanone_out, highlod_out, coord ){
-	so_rownames <- rownames(scanone)
-	hl_genenames <- highlod$names
-	# match gene names with genomic position
-	gene_pos <- coord[coord$tx_name %in% hl_genenames,]
-
-
-}
-head(transcripts)
-cistrans(high1, transcripts)
-hl_genenames
-
-hl_genenames <- high1$names
-str(hl_genenames)
-gene_pos <- transcripts[transcripts$tx_name %in% hl_genenames,]
-head(gene_pos)
-dim(gene_pos)
-rownames(scanone_imp_tot)[10]
-high1$names[2]
-
-
-
-lods <- as.data.frame(high1$highlod)
-head(lods)
-
+# it is just easier to use merge to get the type of dataframe that is useful for plotting
+# and other applications for now
 markers <- as.data.frame(rownames(scanone_imp_tot))
 head(markers)
 markers[1]
 names(markers) <- "marker_name"
 markers$index <- rownames(markers)
+
+lods <- as.data.frame(high1$highlod)
+head(lods)
+dim(lods)
 
 gene_names <- as.data.frame(high1$names)
 head(gene_names)
@@ -131,6 +110,7 @@ head(cistrans_df)
 dim(cistrans_df)
 tail(cistrans_df)
 
+#load plyr library to do a quick string split
 library(plyr)
 chr_pos <- ldply(strsplit(as.character(cistrans_df$marker_name), split = "x"))
 head(chr_pos)
@@ -142,23 +122,22 @@ str(cistrans_df)
 
 # ignoring the scaffolds for a moment
 cistrans_df$cis_trans <- ifelse(cistrans_df$tx_chrom == cistrans_df$qtl_chrom, paste("cis"), paste("trans"))
-cistrans_df[1500:1600,]
+#take a quick look
+head(cistrans_df)
+cistrans_df[10000:10100,]
 tail(cistrans_df)
 
+# with LOD threshold of 5 and 0 lod support interval
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 write.table(cistrans_df, "cis_trans_scanone_un.csv", sep = ",")
+save.image(file = "un_eqtl.RData", version = NULL, ascii = FALSE, safe = TRUE)
 
 
 
 
 
-
-
-
-
-
-
-
+# in the future this might be useful, but would have to change some the S3 object attributes and 
+# methods to deal with scaffolds and character names for the chromosomes
 #################
 # eQTL package
 #################
