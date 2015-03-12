@@ -356,7 +356,8 @@ brass_UV_7_exp <- brass_merge[brass_merge$gene_name %in% brass_UV_7,]
 head(brass_UV_7_exp)
 dim(brass_UV_7_exp)
 # [1] 106   6
-write.table(brass_UV_7_exp, "brass_UV_A07_peak_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
+write.table(brass_UV_7_exp, "brass_UV_A07_peak_wide_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 
 brass_UV_8_exp <- brass_merge[brass_merge$gene_name %in% brass_UV_8,]
