@@ -1,4 +1,4 @@
-##########
+ z##########
 # Cody Markelz
 # markelz@gmail.com
 # calculate allele specific expression
@@ -338,6 +338,8 @@ write.table(brass_merge, "allele_specific_test_p_adjusted.csv", sep = ",", col.n
 setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
 #redue for marc to get wide format
 brass_UV_7 <- read.table("gr7_3_wide_candidates.txt", sep = " ")
+
+#read in data
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 brass_merge <- read.table("allele_specific_test_p_adjusted.csv", sep = ",", header = TRUE)
 head(brass_UV_7)
@@ -365,6 +367,54 @@ head(brass_UV_8_exp)
 dim(brass_UV_8_exp)
 # [1] 102   6
 write.table(brass_UV_8_exp, "brass_UV_A08_peak_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+##############
+# subset coefs for UV
+##############
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+uncoef <- read.table("brass_group_uncrowded_coef.csv", sep = ",", header = TRUE)
+dim(uncoef)
+head(uncoef)
+# [1] 35039   122
+
+uncoef$geneID <- row.names(uncoef)
+uncoef <- uncoef[,-c(123)]
+
+# quick data subset for brassica UV QTL
+setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
+#redue for marc to get wide format
+brass_UV_7 <- read.table("gr7_3_wide_candidates.txt", sep = " ")
+head(brass_UV_7)
+length(brass_UV_7)
+dim(brass_UV_7)
+str(brass_UV_7)
+names(brass_UV_7) <- "geneID"
+
+gr7_genes <- merge(brass_UV_7, uncoef, by = "geneID", all.x = TRUE)
+dim(gr7_genes)
+head(gr7_genes)
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+write.table(gr7_genes, "gr7_3_wide_candidates_gene_expression.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+#chr 8
+setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
+#redue for marc to get wide format
+brass_UV_8 <- read.table("gr8_2_candidates.txt", sep = " ")
+head(brass_UV_8)
+length(brass_UV_8)
+dim(brass_UV_8)
+str(brass_UV_8)
+names(brass_UV_8) <- "geneID"
+
+gr8_genes <- merge(brass_UV_8, uncoef, by = "geneID", all.x = TRUE)
+dim(gr8_genes)
+head(gr8_genes)
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+write.table(gr8_genes, "gr8_3_wide_candidates_gene_expression.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+
+
+
 
 
 
