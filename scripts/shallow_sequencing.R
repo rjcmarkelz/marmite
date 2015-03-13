@@ -1,6 +1,7 @@
 # Quick script to take a look at some shallow sequencing data for DK and JC
 setwd("/Users/Cody_2/git.repos/brassica_field_2014/raw_data")
 
+# read in counts file from JC
 counts <- read.table("Gene_counts_corwin.csv", sep = ",", header = TRUE)
 head(counts)
 str(counts)
@@ -11,12 +12,15 @@ counts_names
 
 head(counts)[97:100]
 
+#subset for one lane of sequencing
 lane1 <- counts[1:97]
 head(lane1)
 
 row.names(lane1) <- lane1$geneID
 lane1 <- lane1[,-1]
 ?rowSums
+
+#calculate row sums and means for each of the genes
 lane1$total <- rowSums(lane1, na.rm = TRUE)
 lane1$means <- rowMeans(lane1, na.rm = TRUE)
 lane1$means
@@ -26,6 +30,8 @@ hist(lane1$means)
 row.names(lane1)
 lane1$dup_names <- as.character(row.names(lane1))
 lane1$dup_names
+
+#quick reg ex run twice to remove .1.2 values
 lane1$dup_names <- sub("(.+)(\\.\\d)","\\1", lane1$dup_names)
 head(lane1$dup_names)
 str(lane1$dup_names)
@@ -33,7 +39,7 @@ str(lane1$dup_names)
 dim(lane1)
 # [1] 200  99
 
-
+#remove duplicates for multiple gene mappings
 lane1 <- lane1[!duplicated(lane1$dup_names),]
 dim(lane1)
 # [1] 90 99
@@ -54,6 +60,7 @@ colnames(lane1)
 plot(row_NA ~ means, data = lane1)
 head(lane1)
 
+# gene functions
 gene_func <- read.table("C_N_metabolism_arabidopsis_corwin.csv", sep = ",", header = TRUE)
 head(gene_func)
 dim(gene_func)
@@ -62,10 +69,12 @@ gene_func <- gene_func[!duplicated(gene_func$GeneID),]
 dim(gene_func)
 # [1] 96  2
 
-
+# merge dfs
 merged <- merge(lane1, gene_func, by.x = "dup_names", by.y = "GeneID", all.x = TRUE)
 dim(merged)
 head(merged)
+
+#write tables
 
 setwd("/Users/Cody_2/git.repos/brassica_field_2014/raw_data")
 write.table(merged, "C_N_metabolism_subset_shallow.csv", sep = ",", row.names = FALSE)
