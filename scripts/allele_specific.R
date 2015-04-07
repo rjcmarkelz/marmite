@@ -333,7 +333,6 @@ head(brass_merge)
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 write.table(brass_merge, "allele_specific_test_p_adjusted.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
-
 # quick data subset for brassica UV QTL
 setwd("/Users/Cody_2/git.repos/brassica_UV/data/")
 #redue for marc to get wide format
@@ -411,8 +410,12 @@ gr8_genes <- merge(brass_UV_8, uncoef, by = "geneID", all.x = TRUE)
 dim(gr8_genes)
 head(gr8_genes)
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
-write.table(gr8_genes, "gr8_3_wide_candidates_gene_expression.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+write.table(gr8_genes, "gr8_3_candidates_gene_expression.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
+#read in data
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+brass_merge <- read.table("allele_specific_test_p_adjusted.csv", sep = ",", header = TRUE)
+head(brass_merge)
 
 
 

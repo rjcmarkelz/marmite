@@ -1,20 +1,7 @@
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/scripts")
 source("RF_functions.R")
 
-#generic one chromosome simulations
-set.seed(2341)
-geno <- simgeno(124)
-head(geno)
-dim(geno)
-set.seed(213756)
-pheno <- simtrait(geno[, 200], 1, 0.4) + simtrait(geno[, 500], 0.75) - 
-          simtrait(geno[,750], 1.5, 0.3)
-pheno
-dim(pheno)
-length(pheno)
-pdens(pheno, main = "distribution of quantitative trait")
-
-
+library(randomForest)
 library(qtl)
 #some of this involves random draws
 set.seed(123567)
@@ -41,8 +28,7 @@ genotypes[genotypes == 2] <- 0
 head(genotypes)
 colnames(genotypes)
 geno.names <- dimnames(genotypes)[[2]]
-
-
+geno.names
 # Demo values using brassica marker simulated data
 # sample significant markers for our 4 simulated phenotypes
 # or define them as you wish
@@ -74,6 +60,7 @@ br_traits <- function(geno, effect = 1, variance = 0.1){
  return(pheno)
 }
 
+
 y1 <- br_traits(g11, effect = 2, variance = 0.1) + br_traits(g12, effect = 2, variance = 0.1)
 plot(y1)
 
@@ -100,69 +87,10 @@ br_test_cross$pheno$trait2 <- br_traits(g13, effect = 0.3, variance = 0.5) + gen
 br_test_cross$pheno
 
 
-
-
-
-scanout <- scanone(br_test_cross, pheno.col = 2)
-plot(scanout)
-
+########################
 scanout2 <- scanone(br_test_cross, pheno.col = 3)
-plot(scanout2)
 
-
-
-scantwoout <- scantwo(br_test_cross, pheno.col = 3)
-plot(scantwoout)
-
-br_geno <- pull.geno(br_test_cross)
-head(br_geno)
-tail(br_geno)
-br_geno[br_geno == 2] <- 0
-dim(br_geno)
-br_pheno <- as.matrix(pull.pheno(br_test_cross)[3])
-br_pheno
-
-br_geno_epi <- pull.geno(br_test_cross)
-head(br_geno_epi)
-tail(br_geno_epi)
-br_geno_epi[br_geno_epi == 2] <- 0
-dim(br_geno_epi)
-br_pheno_epi <- as.matrix(pull.pheno(br_test_cross)[3])
-br_pheno_epi
-
-
-library(randomForest)
-?randomForest
-
-
-
-rf <- randomForest(y = br_pheno, x = br_geno, ntree = 4000)
-sf <-  rfsf(rf)
-plot(sf)
-
-corr <- estBias(br_geno, 10000, verbose = F)
-plot(corr, type = "h", ylab = "selection freq bias", main = "bias correction factor")
-
-sf_corr <- sf - corr
-sf_corr[sf_corr < 0 ] <- 0
-
-
-par(mfrow = c(2, 1))
-plot(sf, type = "h", ylab = "select freq", main = "RFSF, uncorrected")
-points(c(200, 500, 750), sf[c(200, 500, 750)], col = "red", lwd = 1.5)
-
-
-
-plot(sf_corr, type = "h", ylab = "adjusted select freq", main = "RFSF, corrected")
-points(c(200, 500, 750), sf_corr[c(200, 500, 750)], col = "red", lwd = 1.5)
-sf_corr
-expr <- matrix(rnorm(8 * 100), 8, 100)
-expr
-
-
-
-
-################
+########################
 rf_epi <- randomForest(y = br_pheno_epi, x = br_geno_epi, ntree = 4000)
 sf_epi <-  rfsf(rf_epi)
 plot(sf_epi)
@@ -174,55 +102,68 @@ sf_corr_epi <- sf_epi - corr_epi
 sf_corr_epi[sf_corr_epi < 0 ] <- 0
 
 
+# comparison plots
 par(mfrow = c(2, 1))
-plot(sf_epi, type = "h", ylab = "select freq", main = "RFSF, uncorrected")
-points(c(200, 500, 750), sf[c(200, 500, 750)], col = "red", lwd = 1.5)
-
-
+plot(scanout2)
+# plot(sf_epi, type = "h", ylab = "select freq", main = "RFSF, uncorrected")
 
 plot(sf_corr_epi, type = "h", ylab = "adjusted select freq", main = "RFSF, corrected")
-points(c(200, 500, 750), sf_corr[c(200, 500, 750)], col = "red", lwd = 1.5)
-sf_corr
-expr <- matrix(rnorm(8 * 100), 8, 100)
-expr
+
+#############################
+# QTL on same chromosome for same trait
+#############################
+head(geno.names)
+geno.names # get index for what markers you want
+
+m6 <- geno.names[c(640, 650)]
+m6
+# [1] "D6M31"  "D6M121"
+## get marker genotypes
+g61 <- (genotypes[,m6[1]])
+g61
+g62 <- (genotypes[,m6[2]]) 
+g62
+
+m1[3] #for g13
+# [1] "D2M33"
+
+g61epi <- g61*0.80
+g62epi <- g62*-0.50
+geno_epi <- g61epi + g62epi
+geno_epi
+br_test_cross$pheno$trait3 <- br_traits(g13, effect = 0.3, variance = 0.5) + geno_epi
+br_test_cross$pheno
+
+########################
+scanout3 <- scanone(br_test_cross, pheno.col = 4)
+plot(scanout3)
+
+br_geno_epi <- pull.geno(br_test_cross)
+head(br_geno_epi)
+tail(br_geno_epi)
+br_geno_epi[br_geno_epi == 2] <- 0
+dim(br_geno_epi)
+br_pheno_epi <- as.matrix(pull.pheno(br_test_cross)[4])
+br_pheno_epi
+
+rf_epi <- randomForest(y = br_pheno_epi, x = br_geno_epi, ntree = 4000)
+sf_epi <-  rfsf(rf_epi)
+plot(sf_epi)
+
+corr_epi <- estBias(br_geno_epi, 10000, verbose = F)
+
+sf_corr_epi <- sf_epi - corr_epi
+sf_corr_epi[sf_corr_epi < 0 ] <- 0
+
+
+# comparison plots
+par(mfrow = c(1, 1))
+plot(scanout3)
+# plot(sf_epi, type = "h", ylab = "select freq", main = "RFSF, uncorrected")
+
+plot(sf_corr_epi, type = "h", ylab = "adjusted select freq", main = "RFSF, corrected")
+plot.map(br_test_cross, chr = 6)
 
 
 
 
-
-
-
-# compare to EBglmnet
-setwd("/Users/Cody_2/git.repos/EBglmnet/data/")
-library(EBglmnet)
-data(BASIS)
-head(BASIS)
-data(y)
-y
-n <- 50
-k <- 100
-BASIS <- BASIS[1:n, 1:k]
-y <- y[1:n]
-
-CV <- EBlassoNEG.GaussianCV(BASIS, y, nFolds = 3, Epis = "no")
-CV
-output <- EBlassoNEG.Gaussian(BASIS, y, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
-output
-
-
-CV2 <- EBlassoNEG.GaussianCV(geno, pheno, nFolds = 3, Epis = "no")
-output <- EBlassoNEG.Gaussian(geno, pheno, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
-output
-# gets close, but picks 1 or two bins over
-
-CV3 <- EBlassoNEG.GaussianCV(br_geno, br_pheno, nFolds = 3, Epis = "no")
-output3 <- EBlassoNEG.Gaussian(br_geno, br_pheno, a_gamma = 0.1, b_gamma = 0.1, Epis = "yes")
-output3
-plot
-
-CV4 <- EBelasticNet.GaussianCV(br_geno, br_pheno, nFolds = 3, Epis = "no")
-CV4
-?EBelasticNet.Gaussian
-output4 <- EBelasticNet.Gaussian(br_geno, br_pheno, lambda = 1, alpha = 0.1, Epis = "yes")
-output4
-# gets close, but picks 1 or two bins over
