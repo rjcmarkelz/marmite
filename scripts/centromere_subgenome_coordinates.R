@@ -148,14 +148,17 @@ trans_cent_plot <- ggplot(trans_cent)
 trans_cent_plot <- trans_cent_plot +  theme_bw() + 
                     geom_rect(data = trans_cent[!(trans_cent$Block == "NULL"),],
                        aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 1, color = Block), size = 3) +
-                    geom_point(aes(x = tx_start, y = 0, shape = centplot), size = 4, alpha = 0.1, color = "black") +
-                    scale_shape_manual(values=c(20, 15)) +
-                    facet_grid(chromplot ~ . )
-
+                    geom_point(aes(x = tx_start, y = 0, shape = centplot), size = 5, alpha = 0.1, color = "black") +
+                    scale_shape_manual(values=c(23, 15)) +
+                    facet_grid(chromplot ~ . ) + 
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("") + 
+                    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.grid.major.y = element_blank(), 
+                    	panel.grid.minor.y = element_blank())
 trans_cent_plot
 
 
-
+# infile allele specific data
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 
 ase <- read.table("allele_specific_test_p_adjusted.csv", header = TRUE, sep = ",")
@@ -163,45 +166,12 @@ head(ase)
 dim(ase)
 head(trans_cent)
 
+# merge available data
 ase_cent <- merge(ase, trans_cent, by.x = "gene_name", by.y = "geneID", all.x = TRUE)
 dim(ase_cent)
 head(ase_cent)
 ase_cent$abs_t <- abs(ase_cent$t_stat)
 ase_cent <- ase_cent[!is.na(ase_cent$Chr),]
-
-# ase_cent_plot <- ggplot(ase_cent)
-# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
-#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
-#                        aes(x = Mbp, y = (placeholder*-3), color = Block), size = 2.5) +
-#                     geom_point(aes(x = Mbp, y = abs_t), size = 1.5, alpha = 0.4, color = "black") +
-#                     facet_grid(chromplot ~ . )
-
-# ase_cent_plot
-
-
-# ase_cent_plot <- ggplot(ase_cent)
-# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
-#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
-#                        aes(x = Mbp, y = (placeholder-1), color = Block), size = 3) +
-#                     geom_point(data = ase_cent[!(ase_cent$Mbp == "NA"),],
-#                     	aes(x = Mbp, y = t_stat), size = 1.5, alpha = 0.3, color = "black") +
-#                     facet_grid(Chr ~ . )
-
-# ase_cent_plot
-
-# ase_cent_plot <- ggplot(ase_cent[trans_cent$Chr == "A05",])
-# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
-#                     geom_point(data = ase_cent[!(ase_cent$Mbp == "NA"),],
-#                     	aes(x = Mbp, y = t_stat), size = 1.5, alpha = 0.3, color = "black") +
-#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
-#                        aes(x = Mbp, y = (placeholder-1), color = sub_genome), size = 3) +
-#                     facet_grid(Chr ~ . )
-
-# ase_cent_plot
-
-# ase_cent$abs_t
-# ase_cent$Mbp
-# ase_cent$Chr
 
 
 ############
@@ -221,6 +191,8 @@ hotspots
 
 head(hots1)
 dim(hots1)
+
+#convert marker names to physical positions
 hots1$position <- row.names(hots1)
 hots1$position <- as.numeric(sub("(A)(\\d+)(x)(\\d+)", "\\4", hots1$position))
 head(hots1)
@@ -233,7 +205,7 @@ hots1$Chr      <- hots1$chr
 ######
 #NEAR FINAL PLOT
 ######
-
+# final 3 sub genomes
 ase_cent_plot <- ggplot(data = ase_cent[!(ase_cent$sub_genome == "NA"),])
 ase_cent_plot <- ase_cent_plot +  theme_bw() + 
                     geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
@@ -247,10 +219,18 @@ ase_cent_plot <- ase_cent_plot +  theme_bw() +
 
 ase_cent_plot
 
-ase_cent$Chr
 
+#final all ranges
+ase_cent_plot <- ggplot(data = ase_cent[!(ase_cent$Block == "NA"),])
+ase_cent_plot <- ase_cent_plot +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$Block == "NULL"),],
+                       aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 3, color = Block), size = 4) +
+                    geom_point(data = hots1,
+                    	aes(x = position, y = max.N), size = 3, alpha = 0.3, color = "black") +
+                    facet_grid(Chr ~ . ) +
+                    geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("trans-eQTL number") 
 
-ase_cent$Block
-?findInterval
-hots1$position
+ase_cent_plot
 
