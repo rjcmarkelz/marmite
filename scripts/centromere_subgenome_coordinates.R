@@ -97,11 +97,12 @@ trans_cent_plot <- trans_cent_plot +  theme_bw() +
 
 
 
-?replace
+
 trans_cent$Centromere[1:150]
 trans_cent$centplot <- trans_cent$Centromere
 trans_cent$centplot 
 
+#change name so there is a yes or no
 trans_cent$centplot <- sub("Centromere A01", "centromere", trans_cent$centplot)
 trans_cent$centplot <- sub("centromere A02", "centromere", trans_cent$centplot)
 trans_cent$centplot <- sub("centromere A03", "centromere", trans_cent$centplot)
@@ -131,41 +132,125 @@ str(trans_cent)
 levels(trans_cent$Centromere)
 levels(trans_cent$centplot)
 
+# there were both sub W blocks in the this dataset, merge to one
 trans_cent$Block <- sub("Wa", "W", trans_cent$Block)
 trans_cent$Block <- sub("Wb", "W", trans_cent$Block)
 
+######
+#NEAR FINAL PLOT
+######
+head(trans_cent)
+trans_cent$tx_start <- trans_cent$tx_start/1000000
+trans_cent$tx_end <- trans_cent$tx_end/1000000
 
 
 trans_cent_plot <- ggplot(trans_cent)
 trans_cent_plot <- trans_cent_plot +  theme_bw() + 
-                   geom_tile(data = trans_cent[!(trans_cent$Block == "NULL"),],
-                    aes(x = Mbp, y = placeholder, color = Block)) +
-                   geom_point(data = trans_cent[!(trans_cent$centplot == "NA"),],
-                   	aes(x = Mbp, y = placeholder, fill = centplot)) +
-                    facet_grid(tx_chrom ~ .) 
-
-trans_cent_plot
-
-
-trans_cent_plot <- ggplot(trans_cent)
-trans_cent_plot <- trans_cent_plot +  theme_bw() + 
-                    geom_tile(data = trans_cent[!(trans_cent$Block == "NULL"),],
-                    aes(x = Mbp, y = placeholder, color = Block)) +
-                   geom_point(data = trans_cent[!(trans_cent$centplot == "NA"),],
-                   	aes(x = Mbp, y = placeholder, shape = centplot)) +
-                    scale_shape_manual(values=c(21,24)) + 
-                    facet_grid( ~ chromplot ) 
-
-trans_cent_plot
-
-trans_cent_plot <- ggplot(trans_cent)
-trans_cent_plot <- trans_cent_plot +  theme_bw() + 
-                    geom_tile(data = trans_cent[!(trans_cent$Block == "NULL"),],
-                       aes(x = Mbp, y = placeholder, color = Block)) +
-                    geom_point(aes(x = Mbp, y = placeholder, shape = centplot), size = 4, alpha = 0.1, color = "black") +
+                    geom_rect(data = trans_cent[!(trans_cent$Block == "NULL"),],
+                       aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 1, color = Block), size = 3) +
+                    geom_point(aes(x = tx_start, y = 0, shape = centplot), size = 4, alpha = 0.1, color = "black") +
                     scale_shape_manual(values=c(20, 15)) +
                     facet_grid(chromplot ~ . )
 
 trans_cent_plot
 
+
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+
+ase <- read.table("allele_specific_test_p_adjusted.csv", header = TRUE, sep = ",")
+head(ase)
+dim(ase)
+head(trans_cent)
+
+ase_cent <- merge(ase, trans_cent, by.x = "gene_name", by.y = "geneID", all.x = TRUE)
+dim(ase_cent)
+head(ase_cent)
+ase_cent$abs_t <- abs(ase_cent$t_stat)
+ase_cent <- ase_cent[!is.na(ase_cent$Chr),]
+
+# ase_cent_plot <- ggplot(ase_cent)
+# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
+#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
+#                        aes(x = Mbp, y = (placeholder*-3), color = Block), size = 2.5) +
+#                     geom_point(aes(x = Mbp, y = abs_t), size = 1.5, alpha = 0.4, color = "black") +
+#                     facet_grid(chromplot ~ . )
+
+# ase_cent_plot
+
+
+# ase_cent_plot <- ggplot(ase_cent)
+# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
+#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
+#                        aes(x = Mbp, y = (placeholder-1), color = Block), size = 3) +
+#                     geom_point(data = ase_cent[!(ase_cent$Mbp == "NA"),],
+#                     	aes(x = Mbp, y = t_stat), size = 1.5, alpha = 0.3, color = "black") +
+#                     facet_grid(Chr ~ . )
+
+# ase_cent_plot
+
+# ase_cent_plot <- ggplot(ase_cent[trans_cent$Chr == "A05",])
+# ase_cent_plot <- ase_cent_plot +  theme_bw() + 
+#                     geom_point(data = ase_cent[!(ase_cent$Mbp == "NA"),],
+#                     	aes(x = Mbp, y = t_stat), size = 1.5, alpha = 0.3, color = "black") +
+#                     geom_tile(data = ase_cent[!(ase_cent$Block == "NULL"),],
+#                        aes(x = Mbp, y = (placeholder-1), color = sub_genome), size = 3) +
+#                     facet_grid(Chr ~ . )
+
+# ase_cent_plot
+
+# ase_cent$abs_t
+# ase_cent$Mbp
+# ase_cent$Chr
+
+
+############
+#load un_eqtl.RData
+############
+peak <- max(hots1$max.N)
+hottest <- head(hots1, 50)
+hottest
+hotspots <- ggplot(hots1)
+hotspots <- hotspots + geom_line(aes(x = pos, y = max.N), size = 0.5) +
+                        facet_grid(~ chr) +
+                        geom_hline(yintercept = 100, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme_bw()  +
+                        theme(axis.text.y = element_text(size = 20), axis.text.x = element_text(angle = 45, hjust = 1, size = 15))
+hotspots
+
+head(hots1)
+dim(hots1)
+hots1$position <- row.names(hots1)
+hots1$position <- as.numeric(sub("(A)(\\d+)(x)(\\d+)", "\\4", hots1$position))
+head(hots1)
+tail(hots1)
+hots1$position <- hots1$position/1000000
+hots1$Chr      <- hots1$chr
+
+
+
+######
+#NEAR FINAL PLOT
+######
+
+ase_cent_plot <- ggplot(data = ase_cent[!(ase_cent$sub_genome == "NA"),])
+ase_cent_plot <- ase_cent_plot +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
+                       aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 3, color = sub_genome), size = 4) +
+                    geom_point(data = hots1,
+                    	aes(x = position, y = max.N), size = 3, alpha = 0.3, color = "black") +
+                    facet_grid(Chr ~ . ) +
+                    geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("trans-eQTL number") 
+
+ase_cent_plot
+
+ase_cent$Chr
+
+
+ase_cent$Block
+?findInterval
+hots1$position
 
