@@ -173,6 +173,33 @@ head(ase_cent)
 ase_cent$abs_t <- abs(ase_cent$t_stat)
 ase_cent <- ase_cent[!is.na(ase_cent$Chr),]
 
+ase_dist1 <- ggplot(ase_cent)
+ase_dist1 <- ase_dist1 +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
+                        aes(xmin = tx_start, xmax = tx_end, ymin = -10, ymax = 0, color = sub_genome), size = 4) +
+                    geom_point(
+                        aes(x = tx_start, y = abs_t), size = 1, alpha = 0.3, color = "black") +
+                    facet_grid(Chr ~ . ) +
+                    # geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("t-statistic of cis-eQTL") 
+ase_dist1
+
+ase_dist2 <- ggplot(ase_cent)
+ase_dist2 <- ase_dist2 +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
+                        aes(xmin = tx_start, xmax = tx_end, ymin = -3, ymax = 3, color = sub_genome), size = 3) +
+                    geom_point(
+                        aes(x = tx_start, y = t_stat), size = 1, alpha = 0.3, color = "black") +
+                    facet_grid(Chr ~ . ) +
+                    # geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("t-statistic of cis-eQTL") 
+ase_dist2
+
+
+
+
 
 ############
 #load un_eqtl.RData
@@ -233,4 +260,14 @@ ase_cent_plot <- ase_cent_plot +  theme_bw() +
                     ylab("trans-eQTL number") 
 
 ase_cent_plot
+
+
+
+#check out flowering genes
+ase_cent[ase_cent$gene_name =="Bra009055",]
+ase_cent[ase_cent$gene_name =="Bra028599",]
+ase_cent[ase_cent$gene_name =="Bra006051",]
+
+
+
 
