@@ -49,7 +49,10 @@ lod.thr <- lod.thrs[1]
 # decided to use more stringent cutoff, will use permuations once stopped running
 
 #reduce object size by getting removing NS peaks
+ls()
+?highlod
 high1 <- highlod(scanone_imp_tot, lod.thr = 5, drop.lod = 0)
+head(high1)
 dim(scanone_imp_tot)
 head(scanone_imp_tot)[1:10]
 
@@ -57,7 +60,7 @@ head(scanone_imp_tot)[1:10]
 length(high1)
 class(high1)
 attributes(high1)
-max(high1, lod.thr = lod.thrs)
+max(high1, lod.thr = lod.thr)
 head(high1)
 head(high1$chr.pos)
 head(high1$highlod, 20)
