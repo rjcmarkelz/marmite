@@ -136,6 +136,30 @@ write.table(cistrans_df, "cis_trans_scanone_un.csv", sep = ",")
 save.image(file = "un_eqtl.RData", version = NULL, ascii = FALSE, safe = TRUE)
 
 
+###########
+# 2014_4_11
+###########
+dim(cistrans_df)
+# [1] 40034    13
+unique(cistrans_df$tx_name)
+# 35039
+
+cis_df <- subset(cistrans_df, cis_trans == "cis")
+head(cis_df)
+dim(cis_df)
+# [1] 26964    13
+
+trans_df <- subset(cistrans_df, cis_trans == "trans")
+head(trans_df)
+dim(trans_df)
+# [1] 13070    13
+
+str(cis_df)
+cis_df$qtl_pos <- as.numeric(cis_df$qtl_pos)
+cis_df$distMbp <- abs(cis_df$tx_start - cis_df$qtl_pos)/1000000
+head(cis_df, 25)
+plot(cis_df$distMbp)
+plot(cis_df$lod)
 
 
 
