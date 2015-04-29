@@ -1,4 +1,4 @@
- z##########
+###########
 # Cody Markelz
 # markelz@gmail.com
 # calculate allele specific expression
@@ -173,7 +173,6 @@ save(brass_group_fit, file = "brass_group_fit_object.RData")
 brass_group_tstats <- brass_group_fit$t
 head(brass_group_tstats)
 write.table(brass_group_tstats, "brassica_mixed_group_fit_tstats.csv", row.names = TRUE, sep = ",")
-
 
 
 colnames(brass_group_fit$coefficients)
@@ -374,7 +373,7 @@ write.table(brass_UV_8_exp, "brass_UV_A08_peak_genes.csv", sep = ",", col.names 
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 uncoef <- read.table("brass_group_uncrowded_coef.csv", sep = ",", header = TRUE)
 dim(uncoef)
-head(uncoef)
+head(uncoef)[1:10]
 # [1] 35039   122
 
 uncoef$geneID <- row.names(uncoef)
@@ -417,7 +416,31 @@ setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 brass_merge <- read.table("allele_specific_test_p_adjusted.csv", sep = ",", header = TRUE)
 head(brass_merge)
 
+#######
+# Branching
+#######
+setwd("/Users/Cody_2/git.repos/brassica_branching/output")
+branch <- read.table("gene_list_branching.csv", sep = " ", header = TRUE)
+branch
+uncoef$geneID <- row.names(uncoef)
+uncoef <- uncoef[,-c(123)]
 
+dim(uncoef)
+
+head(branch)
+branch$Brassica.ID <- as.character(branch$Brassica.ID)
+str(branch)
+branch[6,]
+branch[7,]
+
+?subset
+branch_genes <- merge(uncoef, branch, by = "geneID", all.y = TRUE)
+head(branch_genes)
+dim(branch_genes)
+branch_genes
+
+setwd("/Users/Cody_2/git.repos/brassica_branching/output")
+write.table(branch_genes, "branch_genes.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 
 

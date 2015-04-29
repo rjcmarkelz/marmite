@@ -261,12 +261,11 @@ ase_cent_plot <- ase_cent_plot +  theme_bw() +
 
 ase_cent_plot
 
-
-
 #check out flowering genes
 ase_cent[ase_cent$gene_name =="Bra009055",]
 ase_cent[ase_cent$gene_name =="Bra028599",]
 ase_cent[ase_cent$gene_name =="Bra006051",]
+
 
 
 

@@ -160,6 +160,10 @@ cis_df$distMbp <- abs(cis_df$tx_start - cis_df$qtl_pos)/1000000
 head(cis_df, 25)
 plot(cis_df$distMbp)
 plot(cis_df$lod)
+#################
+# Use mid-gene coordinate instead of startsite. Some are plus and some are minus strand, so loss of information
+# if just using the start site from the "top" of the chromosome.
+#################
 
 
 

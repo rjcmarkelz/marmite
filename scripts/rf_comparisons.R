@@ -89,7 +89,7 @@ br_test_cross$pheno
 
 ########################
 scanout2 <- scanone(br_test_cross, pheno.col = 3)
-
+plot(scanout2)
 ########################
 rf_epi <- randomForest(y = br_pheno_epi, x = br_geno_epi, ntree = 4000)
 sf_epi <-  rfsf(rf_epi)
