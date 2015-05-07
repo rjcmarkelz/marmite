@@ -2,7 +2,7 @@
 ###########
 # cody markelz 
 # quick hacking to make some progress
-# April 30, 2015
+# May 6, 2015
 ###########
 
 
@@ -188,7 +188,7 @@ summary(field_traits)
 n.ind <- 119
 
 
-# 0.24 corr
+# 0.91 corr
 set.seed(123)
 rnorm(2,0.2,1)*good_frt
 expr <- runif(2,.001,.1)*good_frt + runif(2,.001,.1)*fit_un + runif(2,50,100)[g41] 
@@ -199,28 +199,6 @@ expr
 cor(expr, good_frt)
 cor(good_frt, fit_un)
 cor(expr, fit_un)
-
-
-# #.99 corr
-# set.seed(12345)
-# expr2 <- rnorm(2,0.2,1)*good_frt + rnorm(2,0.5,1)[g31] + rnorm(2,0.5,1)[g41]
-# expr2
-# cor(expr2, good_frt)
-
-# # 0.6 corr
-# set.seed(123456)
-# expr3 <- rnorm(2,0.2,1)*good_frt + rnorm(2,0.5,1)[g31] + rnorm(2,0.5,1)[g41]
-# expr3
-# cor(expr3, good_frt)
-
-# # -0.69 corr
-# set.seed(123)
-# expr3 <- rnorm(2,0.2,1)*good_frt + rnorm(2,0.5,1)[g31] + rnorm(2,0.5,1)[g41]
-# expr3
-# cor(expr3, good_frt)
-
-# there are some NAs in the phenotype matrix that I suspect is contributing to the problems.
-# need to figure this out.
 
 markers <- list(m1, m2, m4)
 markers
@@ -266,15 +244,23 @@ graph2
 plot(graph2)
 tkplot(graph2)
 
-
 setwd("~/git.repos/brassica_meta_analysis/Cleaned_data/")
 save.image()
 ls()
 
+########
+# NEXT
+########
+
+#load eQTL data
+summary(brassica_genes)
+# get intervals for yield QTL
+# subset genes in interval
+# Build large model with all genes and yield QTLs
 
 
 
-
+#################
 #################
 # aggregated traits for tiffany
 #################
@@ -314,7 +300,6 @@ class(aggregated_traits)[1] <- "riself"
 aggregated_traits <- jittermap(aggregated_traits)
 aggregated_traits
 
-
 aggregated_traits <- sim.geno(aggregated_traits, step = 1, n.draws = 64) 
 plot(aggregated_traits)
 names(aggregated_traits$pheno)
@@ -343,7 +328,6 @@ height_cim <- cim(aggregated_traits, pheno.col = 13)
 plot(height_cim)
 setwd("~/git.repos/brassica_meta_analysis/Output/")
 write.table(height_cim, "height.csv", sep = ",", col.names = TRUE, row.names = TRUE)
-
 
 biomass_so <- scanone(aggregated_traits, method = "imp", pheno.col = 22, n.perm = 1000)
 plot(biomass_so)
