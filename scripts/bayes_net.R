@@ -267,9 +267,9 @@ plot(graph2)
 tkplot(graph2)
 
 
-
-
-
+setwd("~/git.repos/brassica_meta_analysis/Cleaned_data/")
+save.image()
+ls()
 
 
 
