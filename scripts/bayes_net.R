@@ -69,8 +69,9 @@ field_traits
 str(field_traits)
 
 field_traits <- sim.geno(field_traits, step = 1, n.draws = 64) 
-
-
+effectscan(field_traits, pheno.col = 28)
+field_fit <- cim(field_traits, pheno.col = 28)
+plot(field_fit)
 #uses imputation
   #creates n.draw number of populations where the missing 
   #genotypes are filled in based on recombination frequencies

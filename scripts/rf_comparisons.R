@@ -49,7 +49,7 @@ g31 <- (genotypes[,m3[1]])
 g32 <- (genotypes[,m3[2]])
 g41 <- (genotypes[,m4[1]]) 
 
-# function (orginal by Micheal Kuhn) to convert 0, 1 genotype assignments at markers into QTL with 
+# function (original by Micheal Kuhn) to convert 0, 1 genotype assignments at markers into QTL with 
 # tunable effect size and variance
 br_traits <- function(geno, effect = 1, variance = 0.1){
  variance <- variance*abs(effect)
