@@ -1,10 +1,10 @@
 # a majority of this code is from various tutorials 
 # on the WGCNA site. 
 library(WGCNA)
+
 # install dependencies
 source("http://bioconductor.org/biocLite.R") 
 biocLite("impute") 
-
 options(stringsAsFactors = FALSE)
 enableWGCNAThreads()
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
@@ -38,7 +38,7 @@ head(brexp_rand)[,1:10]
 
 # WGCNA analysis pipeline begin
 powers <- c(c(1:10), seq(from = 12, to = 20, by = 2))
-
+powers
 # determine soft threshold
 soft <- pickSoftThreshold(brexp_rand, powerVector = powers, verbose = 5)
 str(soft)
@@ -53,6 +53,7 @@ text(soft$fitIndices[,1], -sign(soft$fitIndices[,3])*soft$fitIndices[,2],
 abline(h = 0.90, col = "red")
 
 adj_mtx <- adjacency(brexp_rand, power = 6)
+head(adj_mtx)[,1:10]
 system.time(TOM <- TOMsimilarity(adj_mtx))
 dissTOM <- 1 - TOM
 

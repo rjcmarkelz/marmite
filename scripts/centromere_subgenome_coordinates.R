@@ -142,7 +142,7 @@ trans_cent$Block <- sub("Wb", "W", trans_cent$Block)
 head(trans_cent)
 trans_cent$tx_start <- trans_cent$tx_start/1000000
 trans_cent$tx_end <- trans_cent$tx_end/1000000
-
+head(trans_cent)
 
 trans_cent_plot <- ggplot(trans_cent)
 trans_cent_plot <- trans_cent_plot +  theme_bw() + 
@@ -156,6 +156,23 @@ trans_cent_plot <- trans_cent_plot +  theme_bw() +
                     theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.grid.major.y = element_blank(), 
                     	panel.grid.minor.y = element_blank())
 trans_cent_plot
+
+# the same plot as above, but just the LF1, MF1, MF2
+head(trans_cent)
+str(trans_cent)
+subgenome_blocks <- ggplot(trans_cent)
+subgenome_blocks <- subgenome_blocks +  theme_bw() + 
+                    geom_rect(data = trans_cent[!(trans_cent$sub_genome == "NA"),],
+                       aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 1, color = sub_genome), size = 2) +
+                    geom_point(aes(x = tx_start, y = 0, shape = centplot), size = 5, alpha = 0.1, color = "black") +
+                    scale_shape_manual(values=c(23, 15)) +
+                    facet_grid(chromplot ~ . ) + 
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("") + 
+                    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), panel.grid.major.y = element_blank(), 
+                        panel.grid.minor.y = element_blank())
+subgenome_blocks
+
 
 
 # infile allele specific data
@@ -266,6 +283,18 @@ ase_cent[ase_cent$gene_name =="Bra009055",]
 ase_cent[ase_cent$gene_name =="Bra028599",]
 ase_cent[ase_cent$gene_name =="Bra006051",]
 
+
+# 2015_06_30
+# rolling averages
+head(ase_cent)
+library(zoo)
+
+?rollmean
+?subset
+tempA03 <- subset(ase_cent, Chr = "A03")
+tempseries <- zoo(tempA03$abs_t, tempA03$Start)
+head(tempseries)
+tempA03$avg <- rollmean(tempseries, 3)
 
 
 
