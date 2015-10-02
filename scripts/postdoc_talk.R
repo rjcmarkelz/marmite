@@ -74,6 +74,7 @@ dim(field_data)
 field_data2 <- merge(field_data, aggregated, by.x = "Line", by.y = "RILs", all.x = TRUE)
 dim(field_data2)
 # [1] 125 135
+head(field_data2)
 
 field_data_t <- as.data.frame(t(field_data2))
 field_data_t
@@ -90,6 +91,7 @@ field_data_t
 
 setwd("~/git.repos/brassica_meta_analysis/Cleaned_data/")
 write.table(field_data_t, "all_traits_RQTL.csv", sep = ",", col.names = FALSE)
+write.table(field_data2, "all_traits.csv", sep = ",", col.names = TRUE)
 
 
 #make sure directory is set
@@ -604,7 +606,7 @@ summary(spec_traits_qb)
 spec_traits_qb$pheno$id
 p450_traits_qb$pheno$id2 <- as.numeric(sub("(RIL_)(\\d+)", "\\2", p450_traits_qb$pheno$id))
 p450_traits_qb$pheno$id2
-
+`
 combined <- p450_traits_qb
 p450_red <- pull.pheno(p450_traits_qb, pheno.col = c("id", "id2", "Bra009331", "Bra009312"))
 p450_red
@@ -680,8 +682,9 @@ qdg_out <- qdg(cross= combined,
 
 ?qdg
 summary(qdg_out)
-
+?graph.qdg
 graph2 <- graph.qdg(qdg_out)
+graph2
 plot(graph2)
 plot.igraph(graph2, edge.color="black")
 tkplot(graph2, edge.color = "black")
