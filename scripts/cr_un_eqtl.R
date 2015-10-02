@@ -172,6 +172,12 @@ marker_indx$marker_index <- as.character(rownames(marker_indx))
 gxe_genes_markers <- merge(highlod_marker_gene, marker_indx, by.x = "marker_names", by.y = "marker_index", all.x = TRUE)
 head(gxe_genes_markers)
 
+# add physical position to compare with other plots
+gxe_genes_markers$Mbp <- as.numeric(sub("(A\\w+)(x)(\\d+)", "\\3", gxe_genes_markers$marker_names))
+head(gxe_genes_markers)
+gxe_genes_markers$Mbp <- gxe_genes_markers$Mbp/1000000
+
+
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 # write table for eQTL cis/trans
 write.table(gxe_genes_markers, "gxe_genes_markers.csv", sep = ",", col.names = TRUE, row.names = FALSE)
@@ -187,11 +193,12 @@ dim(gxe_genes_markers)
 library(ggplot2)
 
 gxe_plot <- ggplot(gxe_genes_markers)
-gxe_plot <- gxe_plot +  theme_bw() + geom_point(aes(x = pos, y = lod,  alpha = 0.1), size = 2) +
+gxe_plot <- gxe_plot +  theme_bw() + geom_point(aes(x = Mbp, y = lod,  alpha = 0.1), size = 2) +
                         facet_grid(chr ~ .) + 
                         ggtitle("G by E eQTL distribution") +
-                        xlab("Genetic Position (cM)") +
+                        xlab("Genomic Position (Mbp)") +
                         ylab("LOD Score") +
+                        scale_y_continuous(limits= c(3, 7)) +
                         theme(axis.title=element_text(face="bold",size="20"),
                               axis.text=element_text(face="bold", size="12"),
                               legend.position = "none")  
@@ -199,6 +206,40 @@ gxe_plot
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
 ggsave(gxe_plot, file = "gxe_hotspots.pdf", width = 10, height = 20 )
 
+# infile subgenomes
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+
+trans_cent <- read.table("trans_cent.csv", sep = ",", header = TRUE)
+head(trans_cent)
+
+gxe_trans_cent <- merge(gxe_genes_markers, trans_cent, by.x = "gene_names", by.y = "geneID", all.x = TRUE)
+head(gxe_trans_cent)
+dim(gxe_trans_cent)
+
+
+######start here########
+######start here########
+######start here########
+######start here########
+gxe_trans_cent_plot <- ggplot(data = trans_cent[!(trans_cent$sub_genome == "NA"),])
+gxe_trans_cent_plot <- gxe_trans_cent_plot +  theme_bw() + 
+                    geom_rect(data = trans_cent[!(trans_cent$sub_genome == "NA"),],
+                       aes(xmin = tx_start, xmax = tx_end, ymin = -1, ymax = 3, color = sub_genome), size = 4) +
+                    geom_point(data = gxe_genes_markers,
+                    	aes(x = Mbp, y = lod), size = 3, alpha = 0.3, color = "black") +
+                    facet_grid(Chr ~ . ) +
+                    # geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("trans-eQTL number") 
+
+gxe_trans_cent_plot
+######start here########
+
+
+
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
+ggsave(gxe_trans_cent_plot, file = "gxe_hotspots.pdf", width = 10, height = 20 )
 
 #####
 # did not end up using this
