@@ -177,6 +177,7 @@ subgenome_blocks
 
 # infile allele specific data
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+write.table(trans_cent, "trans_cent.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 ase <- read.table("allele_specific_test_p_adjusted.csv", header = TRUE, sep = ",")
 head(ase)
