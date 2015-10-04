@@ -1,3 +1,14 @@
+########
+# NEXT
+########
+
+#load eQTL data
+summary(brassica_genes)
+# get intervals for yield QTL
+# subset genes in interval
+# Build large model with all genes and yield QTLs
+
+
 #####
 # Data integration examples
 #####
@@ -693,15 +704,7 @@ setwd("~/git.repos/brassica_meta_analysis/Cleaned_data/")
 save.image()
 ls()
 
-########
-# NEXT
-########
 
-#load eQTL data
-summary(brassica_genes)
-# get intervals for yield QTL
-# subset genes in interval
-# Build large model with all genes and yield QTLs
 
 
 
