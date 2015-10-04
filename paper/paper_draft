@@ -17,7 +17,48 @@ The evolution of plants DNA sequence variation leading to differences in phenoty
 
 In many cases these DNA polymorphisms cause quantifiable differences in mRNA abundance that leads to quantifiable differences in protein abundance.
 
-Plant competition for light resources at the top of the canopy.
+Plant competition for light resources at the top of the canopy. What would we expect a-priori from the GxE eQTL? If this paper is going to be about the GxE, then I need to really think about what that means in this context. 
+
+(1) sub-genomes also show the response to the GxE? 
+(2) If plants are grown in crowded environments over a long period of time would we expect the shade avoidance pathway to be upregulated?
+(3) Subset data by metabolic genes. This is what I should have done a while ago. This is still what I should do. 
+
+Is there something fundamental about the expression network that changes across environments? Not likely. Hypothesis about metabolism changing across environments. Growth rates in different treatments. 
+
+Single gene perspective: polymorphism in the promotor region causing differential expession?
+
+Regional perspective on the chromosome: explain hotspots for one highly expressed gene? See paper sent by Akiva. 
+
+Genome perspective: eQTL hotspots on regions that are from different evolutionary or breeding history?
+
+How are these hotspots differentially regulated in each environment? What is the overlapping set of hotspots between the environments?
+
+We wanted to test what the metabolic consequences were for growth in crowded environments. 
+
+If the meristematic tissue is the developmental tissue making the decisions, how does the gene expression match the phenotypic outputs that are downstream in the developmental pathway? Flowering? Genetic modules for other things? 
+
+Would we only see the downstream genes? Or would we also see signal for shade avoidance genes? This timing of shade response is something interesting to look across the arabidopsis data set as well. 
+
+I am okay with a descriptive paper. 
+
+We are treating gene expression as a quantitative trait that has a genetic basis. We are examining the genotype by environment interactions across the genome that are responding differently in thier gene expression signatures based on whether the genotype was grown in crowded or uncrowded conditions. We want to know if the usual gene suspects involved in shade avoidance are also differentially expressed in crowded vs. uncrowded. A majority of genes are differentially expressed in sun vs. shade conditions because we have so many observations from each condition. This presents a problem if we want to examine the "top" differentially expressed genes across our dataset. So then what do we do and how do we do it? 
+
+
+Introduction
+Paragraph 1- Understanding the genetic basis of plant competition is important for agriculture and ecology. 
+
+Paragraph 2- We have the genetic tools to do this. GxE 
+
+Paragraph 3- Expression QTLs intro and thier power to help resolve QTL, especially if the region is narrow. 
+
+Paragraph 4- I think that this would be easier with figures. 
+
+
+
+
+
+
+
 
  
 
