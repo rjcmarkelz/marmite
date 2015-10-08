@@ -318,7 +318,7 @@ summary(br_phys_qb)
 
 ?qb.mcmc
 br_phy_height <- qb.mcmc(br_phys_qb, epistasis = TRUE, pheno.col = "X2011_STP", seed = 1616,  n.iter = 3000)
-plot(qb.loci(br_phy_height))
+plot(br_phy_height)
 ?qb.scanone
 height_post <- qb.scanone(br_phy_height, type.scan = "posterior",  epistasis = FALSE, smooth = 2)
 height_post <- as.data.frame(height_post)
