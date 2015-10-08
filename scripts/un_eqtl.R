@@ -201,15 +201,70 @@ head(peaks_red)
 names(peaks_red)
 tail(peaks_red)
 
-
-
-
 tester <- as.data.frame(peaks_red$Bra000007)
 tester2 <- rbind(tester, tester)
 tester2
 
 tester2$gene <- paste("Bra000007")
 tester2
+
+##### 
+#explore shade genes
+#####
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+br_shade <- read.delim("br_shade_genes.csv", header = TRUE, sep = ",")
+head(br_shade)
+head(scanone_imp_tot)[1:10]
+br_shade
+
+
+scanone_imp_tot[c(1,2)]
+scanone_imp_tot2 <- scanone_imp_tot
+scanone_imp_tot2$marker <- rownames(scanone_imp_tot2)
+dim(scanone_imp_tot2)
+scanone_imp_tot2 <- scanone_imp_tot2[c(35042,1:35041)]
+
+
+# a few genes have multiple arabidopsis hits
+shade_qtl <- scanone_imp_tot2[c(1,2,3, br_shade$V1)]
+str(shade_qtl)
+dim(shade_qtl)
+plot(shade_qtl)
+
+shade_qtl <- shade_qtl[-c(4:6)]
+
+library(reshape2)
+library(ggplot2)
+melt?
+?melt
+head(shade_qtl)[1:10]
+shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
+head(shade_melt)
+colnames(shade_qtl)
+
+peak <- max(shade_melt$value)
+shade_plot <- ggplot(shade_melt)
+shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color = variable), size = 2) +
+                        geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        facet_grid(chr ~ .) +
+                        # theme(legend.position = "none",
+                        #   axis.text.x = element_text(angle = 90),
+                        #   axis.line=element_line())
+                        #   # panel.margin = unit(0, "cm")) +
+                        # ggtitle("LOD Curves for QTLs") +
+                        theme(legend.position="none") +
+                        xlab("Genetic Distance Along Chromosome") +
+                        ylab("LOD Score") 
+shade_plot
+
+#check out flowering genes
+ase_cent[ase_cent$gene_name =="Bra009055",] #FLC chr A10
+ase_cent[ase_cent$gene_name =="Bra028599",] #FLC
+ase_cent[ase_cent$gene_name =="Bra006051",] #FLC
+
 
 
 

@@ -41,6 +41,7 @@ system.time(scanone.imp.1 <- scanone(brassica_genes, pheno.col = 1:35039,
 # 845.002  11.957 854.041 
 
 head(scanone.imp.1)
+str(scanone.imp.1)
 
 brassica_genes <- calc.genoprob(brassica_genes)
 
@@ -240,6 +241,61 @@ gxe_trans_cent_plot
 
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
 ggsave(gxe_trans_cent_plot, file = "gxe_hotspots.pdf", width = 10, height = 20 )
+
+
+# Do the GxE hotspots have an overlap with known shade genes?
+
+# eqtl dataset
+brassica_genes
+
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+br_shade <- read.delim("br_shade_genes.csv", header = TRUE, sep = ",")
+head(br_shade)
+head(scanone.imp.1)[1:10]
+br_shade
+
+
+scanone.imp.1[c(1,2)]
+scanone.imp.2 <- scanone.imp.1
+scanone.imp.2$marker <- rownames(scanone.imp.2)
+dim(scanone.imp.2)
+scanone.imp.2 <- scanone.imp.2[c(35042,1:35041)]
+
+
+# a few genes have multiple arabidopsis hits
+shade_qtl <- scanone.imp.2[c(1,2,3, br_shade$V1)]
+str(shade_qtl)
+dim(shade_qtl)
+plot(shade_qtl)
+
+shade_qtl <- shade_qtl[-c(4:6)]
+
+library(reshape2)
+library(ggplot2)
+melt?
+?melt
+head(shade_qtl)[1:10]
+shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
+head(shade_melt)
+
+
+peak <- max(shade_melt$value)
+shade_plot <- ggplot(shade_melt)
+shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color = variable), size = 2) +
+                        geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        facet_grid(chr ~ .) +
+                        # theme(legend.position = "none",
+                        #   axis.text.x = element_text(angle = 90),
+                        #   axis.line=element_line())
+                        #   # panel.margin = unit(0, "cm")) +
+                        # ggtitle("LOD Curves for QTLs") +
+                        theme(legend.position="none") +
+                        xlab("Genetic Distance Along Chromosome") +
+                        ylab("LOD Score") 
+shade_plot
+
 
 #####
 # did not end up using this
