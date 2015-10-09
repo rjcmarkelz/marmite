@@ -243,6 +243,10 @@ shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
 head(shade_melt)
 colnames(shade_qtl)
 
+shade_melt_sub <- subset(shade_melt, chr == "A03")
+head(shade_melt_sub)
+
+
 peak <- max(shade_melt$value)
 shade_plot <- ggplot(shade_melt)
 shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color = variable), size = 2) +
@@ -260,15 +264,149 @@ shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color
                         ylab("LOD Score") 
 shade_plot
 
+peak <- max(shade_melt_sub$value)
+shade_sub_plot <- ggplot(shade_melt_sub)
+shade_sub_plot <- shade_sub_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color = variable), size = 2) +
+                        geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        # facet_grid(chr ~ .) +
+                        # theme(legend.position = "none",
+                        #   axis.text.x = element_text(angle = 90),
+                        #   axis.line=element_line())
+                        #   # panel.margin = unit(0, "cm")) +
+                        # ggtitle("LOD Curves for QTLs") +
+                        theme(legend.position="none") +
+                        xlab("Genetic Distance Along Chromosome") +
+                        ylab("LOD Score") 
+shade_sub_plot
+
 #check out flowering genes
 ase_cent[ase_cent$gene_name =="Bra009055",] #FLC chr A10
 ase_cent[ase_cent$gene_name =="Bra028599",] #FLC
 ase_cent[ase_cent$gene_name =="Bra006051",] #FLC
 
+setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
+gene_coord <- read.table("transcripts_eqtl_start_stop_eqtl.csv", sep = ",", header = TRUE)
+head(gene_coord)
+head(br_shade)
+
+shade_coord <- merge(br_shade, gene_coord, by.x = "V1", by.y = "tx_name", all.x = TRUE)
+dim(shade_coord)
+head(shade_coord)
+shade_coord
+
+trans_shade <- subset(shade_coord, tx_chrom != "A03")
+head(trans_shade)
+dim(trans_shade)
+trans_shade
+
+# a few genes have multiple arabidopsis hits
+shade_qtl <- scanone_imp_tot2[c(1,2,3, trans_shade$V1)]
+str(shade_qtl)
+dim(shade_qtl)
+plot(shade_qtl)
+head(shade_qtl)
+
+head(shade_qtl)[1:10]
+shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
+head(shade_melt)
+colnames(shade_qtl)
+
+
+shade_melt_sub2 <- subset(shade_melt, chr == "A03")
+head(shade_melt_sub2)
+shade_melt_sub2
+
+shade_melt_sub2$physical <- as.numeric(sub("(A03)(x)(\\d+)", "\\3", shade_melt_sub2$marker))/1000000
+head(shade_melt_sub2)
+str(shade_melt_sub2)
+
+peak <- max(shade_melt_sub2$value)
+trans_shade_plot <- ggplot(shade_melt_sub2)
+trans_shade_plot <- trans_shade_plot +  theme_bw() + geom_line(aes(x = physical, y = value, color = variable), size = 2) +
+                        geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        geom_segment(aes(x = physical, xend = physical), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        facet_grid(chr ~ .) +
+                        # theme(legend.position = "none",
+                        #   axis.text.x = element_text(angle = 90),
+                        #   axis.line=element_line())
+                        #   # panel.margin = unit(0, "cm")) +
+                        # ggtitle("LOD Curves for QTLs") +
+                        theme(legend.position="none") +
+                        xlab("Genomic Position (Mbp)") +
+                        ylab("LOD Score") 
+trans_shade_plot
 
 
 
 
+#metabolism genes
+# go to data directory
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+
+br_met <- read.delim("br_met_genes.csv", header = TRUE, sep = ",")
+head(br_met)
+head(scanone_imp_tot)[1:10]
+br_shade
+
+scanone_imp_tot[c(1,2)]
+scanone_imp_tot2 <- scanone_imp_tot
+scanone_imp_tot2$marker <- rownames(scanone_imp_tot2)
+dim(scanone_imp_tot2)
+scanone_imp_tot2 <- scanone_imp_tot2[c(35042,1:35041)]
+
+
+
+
+
+# a few genes have multiple arabidopsis hits
+met_qtl <- scanone_imp_tot2[c(1,2,3, br_met$V1)]
+str(met_qtl)
+dim(met_qtl)
+plot(met_qtl)
+
+met_qtl <- scanone_imp_tot2[c(1,2,3, br_met$V1)]
+str(met_qtl)
+dim(met_qtl)
+plot(met_qtl)
+
+met_qtl <- met_qtl[-c(4:7)]
+
+library(reshape2)
+library(ggplot2)
+melt?
+?melt
+head(met_qtl)[1:10]
+dim(met_qtl)
+
+# do partial melts of the dataframes
+# follows where the cis-eqtl are
+met_melt <- melt(met_qtl[c(1:300)] , id = c("marker", "chr", "pos"))
+head(met_melt)
+colnames(met_qtl)
+dim(met_melt)
+
+peak <- max(met_melt$value)
+met_plot <- ggplot(met_melt)
+met_plot <- met_plot +  theme_bw() + geom_point(aes(x = pos, y = value), size = 2) +
+                        # geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        # geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        facet_grid(chr ~ .) +
+                        # theme(legend.position = "none",
+                        #   axis.text.x = element_text(angle = 90),
+                        #   axis.line=element_line())
+                        #   # panel.margin = unit(0, "cm")) +
+                        # ggtitle("LOD Curves for QTLs") +
+                        theme(legend.position="none") +
+                        xlab("Genetic Distance Along Chromosome") +
+                        ylab("LOD Score") 
+?ggsave
+met_plot
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
+ggsave("met_plot.pdf", met_plot, width = 20, height = 30)
 # attributes(brassica_peaks)$scanone
 
 
