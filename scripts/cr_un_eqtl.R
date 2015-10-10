@@ -292,7 +292,7 @@ shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color
                         #   # panel.margin = unit(0, "cm")) +
                         # ggtitle("LOD Curves for QTLs") +
                         theme(legend.position="none") +
-                        xlab("Genetic Distance Along Chromosome") +
+                        xlab("Genetic Distance Along Chromosome (cM)") +
                         ylab("LOD Score") 
 shade_plot
 
