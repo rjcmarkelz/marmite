@@ -207,6 +207,7 @@ head(brass_subset)
 setwd("/Users/Cody_2/git.repos/brassica_genetic_map/Input")
 gene_contrasts <- read.table("gene_marker_contrast_matrix_long.csv", sep = ",", header = TRUE)
 head(gene_contrasts)
+dim(gene_contrasts)
 
 #order by gene name to make small test
 gene_contrasts <- gene_contrasts[order(gene_contrasts$tx_name),]
