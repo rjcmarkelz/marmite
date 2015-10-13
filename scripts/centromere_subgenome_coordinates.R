@@ -180,13 +180,21 @@ setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 write.table(trans_cent, "trans_cent.csv", sep = ",", col.names = TRUE, row.names = FALSE)
 
 ase <- read.table("allele_specific_test_p_adjusted.csv", header = TRUE, sep = ",")
+trans_cent <- read.table("trans_cent.csv", header = TRUE, sep = ",")
+dim(trans_cent)
 head(ase)
 dim(ase)
-head(trans_cent)
 
+head(trans_cent)
+tail(trans_cent)
+head(ase)
+tail(ase)
 # merge available data
 ase_cent <- merge(ase, trans_cent, by.x = "gene_name", by.y = "geneID", all.x = TRUE)
 dim(ase_cent)
+
+
+
 head(ase_cent)
 ase_cent$abs_t <- abs(ase_cent$t_stat)
 ase_cent <- ase_cent[!is.na(ase_cent$Chr),]
@@ -215,7 +223,17 @@ ase_dist2 <- ase_dist2 +  theme_bw() +
                     ylab("t-statistic of cis-eQTL") 
 ase_dist2
 
-
+ase_dist3 <- ggplot(ase_cent)
+ase_dist3 <- ase_dist3 +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
+                        aes(xmin = tx_start, xmax = tx_end, ymin = -3, ymax = 3, color = sub_genome), size = 3) +
+                    geom_point(aes(x = tx_start, y = abs_t), size = 1, alpha = 0.3, color = "black") +
+                    geom_smooth(aes(x = tx_start, y = abs_t), colour="darkgoldenrod1", size=1.0, method="loess", degree=0, span=0.001, se=FALSE) +
+                    facet_grid(Chr ~ . ) +
+                    # geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("t-statistic of cis-eQTL") 
+ase_dist3
 
 
 
@@ -290,13 +308,62 @@ ase_cent[ase_cent$gene_name =="Bra006051",]
 head(ase_cent)
 library(zoo)
 
+
+ase_dist3 <- ggplot(ase_cent)
+ase_dist3 <- ase_dist3 +  theme_bw() + 
+                    geom_rect(data = ase_cent[!(ase_cent$sub_genome == "NA"),],
+                        aes(xmin = tx_start, xmax = tx_end, ymin = -3, ymax = 3, color = sub_genome), size = 3) +
+                    geom_point(aes(x = tx_start, y = abs_t), size = 1, alpha = 0.3, color = "black") +
+                    geom_smooth(aes(x = tx_start, y = abs_t), colour="darkgoldenrod1", size=1.0, method="loess", degree=0, span=0.001, se=FALSE) +
+                    facet_grid(Chr ~ . ) +
+                    # geom_hline(yintercept = 150, color = "black", size = 1) +
+                    xlab("Genomic Position of Gene Start Site (Mbp)") +
+                    ylab("t-statistic of cis-eQTL") 
+ase_dist3
+
+transcripts <- read.table("transcripts_eqtl_start_stop_eqtl.csv", sep = ",", header = TRUE)
+head(transcripts)
+str(transcripts)
+dim(transcripts)
+
+A03 <- transcripts[transcripts$tx_chrom == "A03",]
+dim(A03)
+
+ase_cis <- merge(ase, transcripts, by.x = "gene_name", by.y = "tx_name", all.x = TRUE)
+head(ase_cis)
+tail(ase_cis)
+dim(ase_cis)
+A03 <- ase_cis[ase_cis$tx_chrom == "A03",]
+dim(A03)
+
+
 ?rollmean
 ?subset
-tempA03 <- subset(ase_cent, Chr = "A03")
-tempseries <- zoo(tempA03$abs_t, tempA03$Start)
+tempA03 <- subset(ase_cent, Chr == "A03")
+head(tempA03)
+str(tempA03)
+dim(tempA03)
+tempA03$pos <- as.numeric(rownames(tempA03))
+length(unique(ase_cent$gene_name))
+
+
+?zoo
+tempseries <- zoo(tempA03$t_stat, tempA03$pos)
+!unique(tempA03$tx_start)
+
 head(tempseries)
-tempA03$avg <- rollmean(tempseries, 3)
-
-
+length(tempseries)
+?rollmean
+plot(tempseries)
+temp_roll <- rollmean(tempseries, 3, fill = NA)
+head(temp_roll)
+length(temp_roll)
+plot(temp_roll)
+x.Date <- as.Date("2003-02-01") + c(1, 3, 7, 9, 14) - 1
+x <- zoo(rnorm(5), x.Date)
+head(x)
+plot(x)
+time(x)
+plot(tempA03$)
 
 
