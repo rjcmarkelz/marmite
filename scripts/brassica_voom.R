@@ -2,7 +2,6 @@
 # Cody Markelz
 # markelz@gmail.com
 # voom/limma analysis pipeline for brassica RNAseq data
-#
 ##########
 
 # go to data directory
@@ -80,7 +79,7 @@ contrasts(Br_RIL) <- contr.sum(122)
 
 
 # full model
-design <- model.matrix(~ 0 + Br_RIL*Br_trt)
+design <- model.matrix(~ Br_RIL*Br_trt)
 colnames(design)
 head(design)
 
@@ -99,6 +98,26 @@ biocLite("edgeR")
 # load libs
 library(edgeR)
 library(limma)
+
+# whitney
+# made directory structure the same on whitney
+load('~/git.repos/brassica_eqtl_v1.5/data/brassica_voom_whitney.RData')
+Br_group <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\2\\3\\4", colnames(mapped_counts)))
+brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
+brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
+brassica_DE$samples
+dim(brassica_DE)
+# [1] 43150   835
+
+# keep genes with at least 1 count per million in at least 20 samples
+brassica_DE <- brassica_DE[rowSums(cpm(brassica_DE) > 1 ) >= 20,]
+dim(brassica_DE)
+#[1] 35039  835
+
+brassica_DE <- calcNormFactors(brassica_DE)
+system.time(brass_voom <- voom(brassica_DE, design, plot = FALSE))
+system.time(fit1 <-lmFit(brass_voom, design)) # currently running full model
 
 
 brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
