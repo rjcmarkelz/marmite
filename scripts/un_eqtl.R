@@ -140,6 +140,7 @@ save.image(file = "un_eqtl.RData", version = NULL, ascii = FALSE, safe = TRUE)
 # 2014_4_11
 ###########
 dim(cistrans_df)
+
 # [1] 40034    13
 unique(cistrans_df$tx_name)
 # 35039
@@ -211,7 +212,7 @@ tester2
 ##### 
 #explore shade genes
 #####
-
+# use un_eqtl.R
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
 br_shade <- read.delim("br_shade_genes.csv", header = TRUE, sep = ",")
 head(br_shade)
@@ -236,8 +237,7 @@ shade_qtl <- shade_qtl[-c(4:6)]
 
 library(reshape2)
 library(ggplot2)
-melt?
-?melt
+
 head(shade_qtl)[1:10]
 shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
 head(shade_melt)
@@ -356,9 +356,6 @@ scanone_imp_tot2 <- scanone_imp_tot
 scanone_imp_tot2$marker <- rownames(scanone_imp_tot2)
 dim(scanone_imp_tot2)
 scanone_imp_tot2 <- scanone_imp_tot2[c(35042,1:35041)]
-
-
-
 
 
 # a few genes have multiple arabidopsis hits

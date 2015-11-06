@@ -191,7 +191,11 @@ save.image(file = "brassica_genes_sig.RData", version = NULL,
 # now for some plotting
 dim(gxe_genes_markers)
 
+# load data
+
+
 library(ggplot2)
+
 
 gxe_plot <- ggplot(gxe_genes_markers)
 gxe_plot <- gxe_plot +  theme_bw() + geom_point(aes(x = Mbp, y = lod,  alpha = 0.1), size = 2) +
@@ -244,7 +248,7 @@ ggsave(gxe_trans_cent_plot, file = "gxe_hotspots.pdf", width = 10, height = 20 )
 
 
 # Do the GxE hotspots have an overlap with known shade genes?
-
+# load cr_un_eqtl
 # eqtl dataset
 brassica_genes
 
@@ -253,7 +257,7 @@ br_shade <- read.delim("br_shade_genes.csv", header = TRUE, sep = ",")
 head(br_shade)
 head(scanone.imp.1)[1:10]
 br_shade
-
+dim(br_shade)
 
 scanone.imp.1[c(1,2)]
 scanone.imp.2 <- scanone.imp.1
@@ -266,15 +270,15 @@ scanone.imp.2 <- scanone.imp.2[c(35042,1:35041)]
 shade_qtl <- scanone.imp.2[c(1,2,3, br_shade$V1)]
 str(shade_qtl)
 dim(shade_qtl)
-plot(shade_qtl)
+
+head(shade_qtl)
 
 shade_qtl <- shade_qtl[-c(4:6)]
 
 library(reshape2)
 library(ggplot2)
-melt?
-?melt
-head(shade_qtl)[1:10]
+
+
 shade_melt <- melt(shade_qtl , id = c("marker", "chr", "pos"))
 head(shade_melt)
 
