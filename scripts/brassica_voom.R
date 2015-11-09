@@ -65,8 +65,10 @@ Br_group
 Br_group2
 Br_RIL  # 122 levels
 length(Br_RIL)
+?relevel
 Br_trt <- relevel(Br_trt, ref = "UN")
 Br_trt
+Br_RIL <- relevel(Br_trt, ref = "103")
 
 # examine some potential contrasts
 test <- contrasts(Br_trt)
@@ -77,16 +79,56 @@ contr.sum(Br_trt)
 contrasts(Br_trt) <- contr.sum(2)
 contrasts(Br_RIL) <- contr.sum(122)
 
+results <- decideTests(fit1)
+head(results)
+vennDiagram(results)
+
+contrast
+
+
 
 # full model
-design <- model.matrix(~ Br_RIL*Br_trt)
+design <- model.matrix(~0 + Br_trt*Br_RIL)
 colnames(design)
-head(design)
+design[,2]
 
+head(design, 20)
+design[,10]
 # group model for eQTL
 group_design <- model.matrix(~ 0 + Br_group)
 head(group_design)
+group_design[,2]
+levels(brassica_DE)
+?contrasts.fit
+colnames(mapped_counts)
 
+
+
+treatment <- factor(sub("(Br_group)(\\d+)(_)(\\w+)",
+                       "\\4", colnames(group_design)))
+treatment
+
+geno <- factor(sub("(Br_group)(\\d+)(_)(\\w+)",
+                       "RIL_\\2", colnames(group_design)))
+geno
+
+?topTable
+topTable(fit1, coef = 2)
+topTable(fit1, coef = 1)
+topTable(fit1, coef = 3)
+topTable(fit1, coef = 6)
+str(fit1)
+
+#load brass_group_fit data
+head(brass_group_fit$design)
+
+contrasts(Br_trt) <- contr.sum(2)
+contrasts(Br_RIL) <- contr.sum(122)
+test <- contr.sum(2)
+test
+head(test)
+Br_trt
+Br_RIL
 ######
 # edgeR and Limma
 ######
@@ -118,8 +160,41 @@ dim(brassica_DE)
 brassica_DE <- calcNormFactors(brassica_DE)
 system.time(brass_voom <- voom(brassica_DE, design, plot = FALSE))
 system.time(fit1 <-lmFit(brass_voom, design)) # currently running full model
+fit1 <- eBayes(fit1)
+toptable(fit1)
+head(fit1)
+head(fit1$design,20)
+
+check <- as.data.frame(fit1$design)
+check[1]
+
+glmLRT(fit1)
 
 
+# edge R 
+brass_DE_glm <- DGEList(counts = mapped_counts, group = Br_group)
+brass_DE_glm <- calcNormFactors(brass_DE_glm)
+
+Br_RIL   <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\2", colnames(mapped_counts)))
+Br_trt <- factor(sub("(RIL_)(\\d+)(_)(\\w+)(_)(Rep)(\\d)+(.)+",
+                       "\\4", colnames(mapped_counts)))
+
+Br_trt <- relevel(Br_trt, ref = "UN")
+Br_trt
+
+design <- model.matrix(~Br_trt*Br_RIL)
+colnames(design)
+
+brass_DE_glm <- estimateDisp(brass_DE_glm, design)
+fit1_glm <- 
+
+
+
+#fit incorrect model on whitney
+############
+# group fits
+############
 brassica_DE <- DGEList(counts = mapped_counts, group = Br_group)
 brassica_DE$samples
 dim(brassica_DE)
@@ -149,11 +224,19 @@ fit1 <- eBayes(fit1)
 toptable(fit1)
 head(fit1)
 
-?topTable
+#######
+###seems strange no gxe here
+#######
+load('~/git.repos/brassica_eqtl_v1.5/data/eQTL_full_model.RData')
+design[,123]
+colnames(design)
 
-toptable(fit1, coef = 3)
-topTable(fit1, coef = 1:20)
+summary(fit1)
+toptable(fit1, coef = 1)
+topTable(fit1, coef = 1:22)
+topTable(fit1, coef = "Br_trtCR")
 
+summary(decideTests(fit1)) #take a look at this output again
 head(brass_voom)
 
 

@@ -213,11 +213,7 @@ tester2
 #explore shade genes
 #####
 # use un_eqtl.R
-setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
-br_shade <- read.delim("br_shade_genes.csv", header = TRUE, sep = ",")
-head(br_shade)
-head(scanone_imp_tot)[1:10]
-br_shade
+
 
 
 scanone_imp_tot[c(1,2)]
