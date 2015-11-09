@@ -301,6 +301,23 @@ shade_plot <- shade_plot +  theme_bw() + geom_line(aes(x = pos, y = value, color
 shade_plot
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #####
 # did not end up using this
 #####
