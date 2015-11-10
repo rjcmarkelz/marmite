@@ -1,0 +1,123 @@
+Ideas I want to get across:
+Linking eQTL to pQTL
+Linking eQTL to genome evolution
+Linking eQTL to gene networks
+
+In the recent evolutionary history of Brassica rapa there is thought to be a two genome duplication events. The first genome duplication event lead to one of the two genomes becoming slightly more dominant. Then there was another genome duplication event that lead to three subgenomes, defined by the residuals of transposons littering the genome. Over time, one of these three subgenomes, the most recent genome duplication event, became the dominant genome for gene expression. If this is true we wanted to explore the possibility that this subgenome is the one responsible for disproportionatly more cis-eqtl attributed to this subgenome. 
+
+We wanted to explore the phenotypic consequences of the expression of these three subgenomes on agronomically and evolutionary important traits. 
+
+Finally we asked whether it made sense to classify gene co-expression networks made out of each of these subgenomes into one large network to explain trait variance or into subnetworks that were more flexible in context specific situations (e.g. in different environments). This goes after the idea that gene duplication allows for more flexiblity in the system, then co-expression networks built solely out of one subgenome could be compared to networks built out of other subgenomes. The caveat here is the information contained within one subgenome. Network horse race? 
+
+Cheng et al 2013 showed that there were definatively three karyotypes in the current brassica rapa subgenome. These were mapped onto the current genome sequence. I took that information and overlayed the eQTL data on top of it. The colors are awesome. When you bring together information that was in different places and make something new with it. This is the art side of science. When combining these pieces of information I found that there appears to be an overlap between the number of trans-eQTL and the least fractionated genome. This is interesting because it could mean that this genome is responsible for disproportionately more of the traits. So you may not need to work with the entire genome to make breeding progress. If you can find the regions that are the least repressed over evolutionary, or domestication then these are the ones that you should focus on breeding for. 
+
+Evolution may have selected for entire genomes that were flexible in how they responded to the environment. There is more entropy in the system if there are three genomes. There are more ways to respond to the environment. Breeding plants to always grow consistantly across a range of environments is a challenge. If there is extra wobble in the system by having more axes of variation to, well, vary and be able to respond to whatever is thrown at the plants. They must interpret the environment and build this into some sort of framework of growth that is flexible to change. As humans we want to control the environment for the plants and maximize their growth given what we shown to be the optimal growth conditions for them. This works, but it is slow progress. Is there another way? We are limited by the physics of the system. Let us not forget that. Hybrid vigor is a manifestation of what I am trying to get across I think. Genes are mixed together and allow the plant to be flexible in how it deals with the given environment. 
+
+The evolution of plants DNA sequence variation leading to differences in phenotypic traits important for plant growth. 
+
+In many cases these DNA polymorphisms cause quantifiable differences in mRNA abundance that leads to quantifiable differences in protein abundance.
+
+Plant competition for light resources at the top of the canopy. What would we expect a-priori from the GxE eQTL? If this paper is going to be about the GxE, then I need to really think about what that means in this context. 
+
+(1) sub-genomes also show the response to the GxE? 
+(2) If plants are grown in crowded environments over a long period of time would we expect the shade avoidance pathway to be upregulated?
+(3) Subset data by metabolic genes. This is what I should have done a while ago. This is still what I should do. 
+
+Is there something fundamental about the expression network that changes across environments? Not likely. Hypothesis about metabolism changing across environments. Growth rates in different treatments. 
+
+Single gene perspective: polymorphism in the promotor region causing differential expession?
+
+Regional perspective on the chromosome: explain hotspots for one highly expressed gene? See paper sent by Akiva. 
+
+Genome perspective: eQTL hotspots on regions that are from different evolutionary or breeding history?
+
+How are these hotspots differentially regulated in each environment? What is the overlapping set of hotspots between the environments?
+
+We wanted to test what the metabolic consequences were for growth in crowded environments. 
+
+If the meristematic tissue is the developmental tissue making the decisions, how does the gene expression match the phenotypic outputs that are downstream in the developmental pathway? Flowering? Genetic modules for other things? 
+
+Would we only see the downstream genes? Or would we also see signal for shade avoidance genes? This timing of shade response is something interesting to look across the arabidopsis data set as well. 
+
+I am okay with a descriptive paper. 
+
+We are treating gene expression as a quantitative trait that has a genetic basis. We are examining the genotype by environment interactions across the genome that are responding differently in thier gene expression signatures based on whether the genotype was grown in crowded or uncrowded conditions. We want to know if the usual gene suspects involved in shade avoidance are also differentially expressed in crowded vs. uncrowded. A majority of genes are differentially expressed in sun vs. shade conditions because we have so many observations from each condition. This presents a problem if we want to examine the "top" differentially expressed genes across our dataset. So then what do we do and how do we do it? 
+
+
+Introduction
+Paragraph 1- Understanding the genetic basis of plant competition is important for agriculture and ecology. 
+
+Paragraph 2- We have the genetic tools to do this. GxE 
+
+Paragraph 3- Expression QTLs intro and thier power to help resolve QTL, especially if the region is narrow. 
+
+Paragraph 4- I think that this would be easier with figures. 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
