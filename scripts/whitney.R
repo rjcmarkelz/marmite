@@ -105,6 +105,34 @@ system.time(fit3 <-lmFit(brass_voom3, design3)) # currently running full model
 head(fit1)
 ?exprs
 ?ns
+design4 <- model.matrix(~Br_trt)
+system.time(brass_voom4 <- voom(brassica_DE, design4, plot = FALSE))
+head(brass_voom4)
+system.time(fit4 <-lmFit(brass_voom4, design4)) # currently running full model
+
+head(fit4)
+head(Lambda)
+lam_rows <- as.data.frame(rownames(Lambda))
+lam_rows[1] <- as.character(lam_rows[1])
+str(lam_rows)
+colnames(lam_rows) <- paste("test")
+lam_rows$test <- as.character(lam_rows$test)
+
+fit4_coefs <- as.data.frame(fit4$coefficients)
+head(rownames(fit4_coefs))
+fit4_coefs$gene <- rownames(fit4_coefs)
+head(fit4_coefs)
+
+str(fit4_coefs)
+fit4_red <- fit4_coefs[fit4_coefs$gene %in% lam_rows$test,]
+dim(fit4_red)
+fit4_red
+
+
+write.table(fit4_red, "shade_genes_trt.csv", sep = ",")
+
+
+
 
 colnames(fit1$coef )[123:244]
 ?topTable
