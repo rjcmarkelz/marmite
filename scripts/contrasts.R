@@ -395,6 +395,35 @@ results_mult[order(results_mult$brass_cr_un.p.value),]
 
 write.csv(results_mult[order(results_mult$brass_cr_un.p.value),],"brass_cr_un_motifs_mult_up.csv")
 
+######
+#
+######
+
+library(motifStack)
+?readPCM
+?pcm2pfm
+pcms <- readPCM(file.path(find.package("motifStack"), "extdata"),"pcm$")
+motifs <- lapply(pcms,pcm2pfm)
+head(motifs)
+head(pcms)
+
+data(extdata)
+
+pcm <- read.table(file.path(find.package("motifStack"), "extdata", "bin_SOLEXA.pcm"))
+head(pcm)
+
+pcm <- pcm[,3:ncol(pcm)]
+rownames(pcm) <- c("A","C","G","T")
+
+motif <- new("pcm", mat=as.matrix(pcm), name="bin_SOLEXA")
+str(motif)
+getIC(motif)
+matrixReverseComplement(motif)
+as(motif,"matrix")
+pcm2pfm(motif)
+
+library(MEET)
+library(MotifDb)
 
 
 
