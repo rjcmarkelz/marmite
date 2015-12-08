@@ -396,7 +396,7 @@ results_mult[order(results_mult$brass_cr_un.p.value),]
 write.csv(results_mult[order(results_mult$brass_cr_un.p.value),],"brass_cr_un_motifs_mult_up.csv")
 
 ######
-#
+# motifs
 ######
 
 library(motifStack)
@@ -424,6 +424,17 @@ pcm2pfm(motif)
 
 library(MEET)
 library(MotifDb)
+library(Biostrings)
 
+arab_prom <- query(MotifDb, 'Athaliana')
+head(arab_prom)
+dim(arab_prom)
+length(arab_prom)
+str(arab_prom)
 
+# use biostrings
+# https://www.bioconductor.org/help/workflows/gene-regulation-tfbs/
+arab_pwm <- arab_prom@listData
+str(arab_prom)
+arab_prom[[1]]
 
