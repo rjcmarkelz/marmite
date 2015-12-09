@@ -438,3 +438,23 @@ arab_pwm <- arab_prom@listData
 str(arab_prom)
 arab_prom[[1]]
 
+data(HNF4alpha)
+head(HNF4alpha)
+HNF4alpha
+data(HNF4alpha)
+library(BSgenome.Dmelanogaster.UCSC.dm3)
+chr3R <- Dmelanogaster$chr3R
+chr3R
+
+pfm <- consensusMatrix(HNF4alpha)
+pwm <- PWM(pfm)
+pwm
+
+# NEXT
+# will need to write a for loop over pwm and promotors object to match each
+hits <- matchPWM(pwm, promoters[[2]], with.score=TRUE)
+hits
+
+
+## Match the minus strand:
+matchPWM(reverseComplement(pwm), chr3R)
