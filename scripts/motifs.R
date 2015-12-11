@@ -9,6 +9,8 @@ library(reshape2)
 library(ggplot2)
 library(Biostrings)
 library(MotifDb)
+library(PWMEnrich)
+library(PWMEnrich.Dmelanogaster.background)
 
 load('~/git.repos/brassica_eqtl_v1.5/data/un_eqtl.RData')
 head(cistrans_df)
@@ -71,8 +73,36 @@ shade_sub_plot
 # promotors
 setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
 promoters <- readDNAStringSet("Brapa_1000bp_upstream_3.fa")
+# promoters <- readFASTA("Brapa_1000bp_upstream_3.fa")
 
-# subset based on shade
-# subset based on treatment
+# subset based on shade genes
+# subset based on treatment effects
 # subset based on metabolism
 # trans hotspots
+
+# for some reason does not accept last entry
+# check specifically last entry
+br_shade
+sh_prom <- promoters[head(br_shade$V1, 188)]
+sh_prom <- unique(sh_prom)
+sh_prom
+# 170
+head(MotifDb)
+str(MotifDb)
+?motifEnrichment
+?query
+arab_prom <- grep('Athaliana', values (MotifDb)$organism)
+str(arab_prom)
+arab_prom_2 <- as.list(MotifDb[arab_prom])
+head(arab_prom_2)
+str(arab_prom_2)
+res <- motifEnrichment(sh_prom_l, arab_prom_2, )
+sh_prom_l <- as.list(sh_prom)
+str(sh_prom_l)
+
+data(PWMLogn.dm3.MotifDb.Dmel)
+str(head(PWMLogn.dm3.MotifDb.Dmel))
+
+sh_prom_l <- do.call(c, sh_prom)
+
+
