@@ -11,6 +11,10 @@ library(Biostrings)
 library(MotifDb)
 library(PWMEnrich)
 library(PWMEnrich.Dmelanogaster.background)
+library(IRanges)
+library(GenomicRanges)
+library(GenomicFeatures)
+
 
 load('~/git.repos/brassica_eqtl_v1.5/data/un_eqtl.RData')
 head(cistrans_df)
@@ -113,3 +117,25 @@ report <- groupReport(res)
 report
 plot(report[1:10], fontsize=7, id.fontsize=5)
 warnings()
+
+load('~/git.repos/brassica_genome_db/raw_data/brassica_gene_db.RData')
+
+?transcriptsByOverlaps
+str(brassica_db)
+qtl_range_candidates <- transcriptsByOverlaps(brassica_db, qtl_range)
+flr_range <- as.data.frame(qtl_range_candidates$tx_name)
+qtl_range_candidates
+flr_range
+br_flr <- read.delim("br_flowering_genes.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(br_flr)
+colnames(br_flr)
+str(br_flr[9])
+colnames(flr_range) <- "y"
+colnames(br_flr[9]) <- "x"
+
+br_flr[9] <- as.character(br_flr[9])
+flr_range <- as.character(flr_range)
+colnames(flr_range) <- "y"
+flr_range
+
+merge(br_flr, flr_range, by.x = "Gene.name.in.B..rapa", by.y = "y")
