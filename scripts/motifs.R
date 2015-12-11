@@ -91,18 +91,25 @@ head(MotifDb)
 str(MotifDb)
 ?motifEnrichment
 ?query
-arab_prom <- grep('Athaliana', values (MotifDb)$organism)
-str(arab_prom)
-arab_prom_2 <- as.list(MotifDb[arab_prom])
-head(arab_prom_2)
-str(arab_prom_2)
-res <- motifEnrichment(sh_prom_l, arab_prom_2, )
-sh_prom_l <- as.list(sh_prom)
-str(sh_prom_l)
+data(MotifDb.Dmel.PFM)
+MotifDb.Dmel.PFM
+arab_motif <- grep('Athaliana', values (MotifDb)$organism)
+str(arab_motif)
+arab_motif_2 <- MotifDb[arab_motif]
+head(str(arab_motif_2))
+test <- matrix(as.list(arab_motif_2[1]))
+test <- as.list(arab_motif_2@listData)
+str(test)
+?toPWM
+pwm <- toPWM(test)
+str(pwm)
+pwm
 
-data(PWMLogn.dm3.MotifDb.Dmel)
-str(head(PWMLogn.dm3.MotifDb.Dmel))
+# Needs list of PWMs using toPWM
+res <- motifEnrichment(sh_prom_l, pwm)
+res
 
-sh_prom_l <- do.call(c, sh_prom)
-
-
+report <- groupReport(res)
+report
+plot(report[1:10], fontsize=7, id.fontsize=5)
+warnings()
