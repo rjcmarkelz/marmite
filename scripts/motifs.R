@@ -110,6 +110,7 @@ str(pwm)
 pwm
 
 # Needs list of PWMs using toPWM
+?motifEnrichment
 res <- motifEnrichment(sh_prom_l, pwm)
 res
 
@@ -119,7 +120,8 @@ plot(report[1:10], fontsize=7, id.fontsize=5)
 warnings()
 
 load('~/git.repos/brassica_genome_db/raw_data/brassica_gene_db.RData')
-
+qtl_range <- GRanges(seqnames = "A03", ranges = IRanges(start=9500000, end=10000000))
+qtl_range 
 ?transcriptsByOverlaps
 str(brassica_db)
 qtl_range_candidates <- transcriptsByOverlaps(brassica_db, qtl_range)
