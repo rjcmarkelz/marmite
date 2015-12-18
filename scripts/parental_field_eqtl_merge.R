@@ -22,6 +22,29 @@ head(scaffolds)
 cis_df <- subset(cistrans_df, cis_trans == "cis")
 dim(cis_df)
 head(cis_df)
+length(unique(cis_df$tx_name))
+str(cis_df)
+
+?aggregate
+cis_ag <- aggregate(lod ~ tx_name, data = cis_df, max)
+dim(cis_ag)
+
+cis_df <- merge(cis_ag, cis_df, by = c("tx_name", "lod"))
+dim(cis_df)
+head(cis_df)
+length(unique(cis_df$tx_name))
+dups <- cis_df[!duplicated(cis_df$tx_name),]
+
+dim(dups)
+head(dups)
+tail(dups)
+dups$tx_chrom
+
+#####
+# START HERE CIS eQTL here
+#####
+
+
 
 trans_df <- subset(cistrans_df, cis_trans == "trans")
 trans_df <- trans_df[!grepl("^Sc", trans_df$tx_chrom),]
@@ -33,7 +56,10 @@ head(trans_df)
 # that is the statistical information that we have for the population
 test <- head(cis_df, n = 20)
 test
-aggregate(lod ~ tx_name, data = test, max)
+?aggregate
+
+test <- aggregate(lod ~ tx_name, data = test, max)
+test
 
 
-max(test$lod)
+
