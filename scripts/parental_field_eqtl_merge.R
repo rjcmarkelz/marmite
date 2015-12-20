@@ -45,17 +45,18 @@ dim(cis_df)
 head(cis_df)
 tail(cis_df)
 cis_df$tx_chrom
+str(cis_df)
+cis_df$qtl_pos <- as.numeric(cis_df$qtl_pos)
 
 cis_plot <- ggplot(cis_df)
-cis_plot <- cis_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 2) +
-                        facet_grid(qtl_chrom ~ . )
+cis_plot <- cis_plot +  theme_bw() + geom_point(aes(x = tx_start, y = lod), size = 1.5) +
+                        facet_grid(qtl_chrom ~ . ) +
                         theme(text = element_text(size = 20))
 cis_plot
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+ggsave("cis_eqtl_plot.pdf", width = 10, height = 15)
 
-qplot(trans_df$lod, trans_df$qtl_pos, facet = trans_df$tx_chrom)
-
-
-
+# trans eQTL
 trans_df <- subset(cistrans_df, cis_trans == "trans")
 dim(trans_df)
 trans_df <- trans_df[!grepl("^Sc", trans_df$tx_chrom),]
@@ -80,15 +81,14 @@ head(trans_ag)
 trans_df <- merge(trans_ag, trans_df, by = c("tx_name", "lod"))
 dim(trans_df)
 head(trans_df)
+trans_df$qtl_pos <- as.numeric(trans_df$qtl_pos)
 
 trans_plot <- ggplot(trans_df)
-trans_plot <- trans_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 2) +
+trans_plot <- trans_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
                         facet_grid(qtl_chrom ~ . )
                         theme(text = element_text(size = 20))
 trans_plot
-
-qplot(trans_df$lod, trans_df$qtl_pos, facet = trans_df$tx_chrom)
-
+ggsave("cis_eqtl_plot.pdf", width = 4, height = 4)
 
 head(trans_df)
 head(cis_df)
@@ -97,6 +97,7 @@ str(trans_df)
 ct_merge <- rbind(cis_df, trans_df)
 head(ct_merge)
 dim(ct_merge)
+str(ct_merge)
 
 merge_plot <- ggplot(ct_merge)
 merge_plot <- merge_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod, color = cis_trans), size = 2) +
@@ -105,8 +106,14 @@ merge_plot <- merge_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod, co
 merge_plot
 
 merge_plot <- ggplot(ct_merge)
-merge_plot <- merge_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = tx_start, color = cis_trans), size = 2) +
-                        facet_grid(qtl_chrom ~ qtl_chrom)
-                        theme(text = element_text(size = 20))
+merge_plot <- merge_plot + geom_point(aes(x = qtl_pos, y = tx_start, color = lod ), size = 1.5) +
+                        scale_y_reverse() +
+                        facet_grid(tx_chrom ~ qtl_chrom) + theme_bw() + 
+                        theme(axis.ticks = element_blank(), axis.text.x = element_blank(),
+                         axis.text.y = element_blank())
 merge_plot
+
+
+ggsave("cis_trans_eqtl_plot.pdf", width = 10, height = 10)
+
 
