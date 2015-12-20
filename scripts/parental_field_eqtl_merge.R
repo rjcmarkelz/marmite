@@ -5,6 +5,8 @@
 ###########
 
 # TODO make sure there are not two trans eQTL per chromosome per gene
+# Go Enrichment?
+# trans hotspots
 
 library(dplyr)
 library(data.table)
@@ -117,10 +119,6 @@ merge_plot
 
 ggsave("cis_trans_eqtl_plot.pdf", width = 10, height = 10)
 
-# cis trans distribution
-# hotspots
-# parental data eQTL for DE genes?
-# flowering gene coordinates
 setwd('~/git.repos/brassica_eqtl_v1.5/data/')
 br_flr <- read.delim("br_flowering_genes.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(br_flr)
