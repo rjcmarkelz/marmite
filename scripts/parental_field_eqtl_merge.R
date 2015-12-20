@@ -69,6 +69,7 @@ tail(trans_df)
 #########
 # TODO
 # need to make sure that there are not 2 eQTL per chromosome
+# 1 MB cutoff?
 #########
 
 # we really do not have the resolution to care about how EXACT the qtl is next
@@ -116,4 +117,117 @@ merge_plot
 
 ggsave("cis_trans_eqtl_plot.pdf", width = 10, height = 10)
 
+# cis trans distribution
+# hotspots
+# parental data eQTL for DE genes?
+# flowering gene coordinates
+setwd('~/git.repos/brassica_eqtl_v1.5/data/')
+br_flr <- read.delim("br_flowering_genes.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(br_flr)
+dim(br_flr)
+colnames(br_flr)
 
+# make trans plot with flowering time coordinates
+# call each df seperately for each geom
+str(flr_genes)
+flr_genes <- br_flr[9]
+colnames(flr_genes)[1] <- "gene_name"
+head(flr_genes)
+
+trans_df$tx_name <- as.character(trans_df$tx_name)
+cis_df$tx_name <- as.character(cis_df$tx_name)
+
+trans_flr_df <- trans_df[trans_df$tx_name %in% flr_genes$gene_name,]
+head(trans_flr_df)
+
+trans_flr_plot <- ggplot(trans_df)
+trans_flr_plot <- trans_flr_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = trans_flr_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+trans_flr_plot
+ggsave("trans_flr_plot.pdf", width = 10, height = 10)
+
+cis_flr_df <- cis_df[cis_df$tx_name %in% flr_genes$gene_name,]
+head(cis_flr_df)
+head(trans_df)
+dim(cis_flr_df)
+
+cis_flr_plot <- ggplot(cis_df)
+cis_flr_plot <- cis_flr_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = cis_flr_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+cis_flr_plot
+ggsave("cis_flr_plot.pdf", width = 10, height = 10)
+
+
+setwd('~/git.repos/brassica_parents/data/')
+
+br_fruits <- read.delim("parental_fruit_field_DE.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(br_fruits)
+tail(br_fruits)
+dim(br_fruits)
+br_fruits$tx_name <- rownames(br_fruits)
+
+cis_de_df <- cis_df[cis_df$tx_name %in% br_fruits$tx_name,]
+head(cis_de_df)
+dim(cis_de_df)
+dim(cis_df)
+
+trans_de_df <- trans_df[trans_df$tx_name %in% br_fruits$tx_name,]
+head(trans_de_df)
+dim(trans_de_df)
+dim(trans_df)
+
+cis_de_plot <- ggplot(cis_df)
+cis_de_plot <- cis_de_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = cis_de_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+cis_de_plot
+
+ggsave("cis_de_fruit_plot.pdf", width = 10, height = 10)
+
+trans_de_plot <- ggplot(trans_df)
+trans_de_plot <- trans_de_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = trans_de_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+trans_de_plot
+ggsave("trans_de_fruit_plot.pdf", width = 10, height = 10)
+
+
+br_leaf <- read.delim("parental_leaf_field_DE.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(br_leaf)
+dim(br_leaf)
+br_leaf$tx_name <- rownames(br_leaf)
+
+
+cis_de_leaf_df <- cis_df[cis_df$tx_name %in% br_leaf$tx_name,]
+head(cis_de_leaf_df)
+dim(cis_de_leaf_df)
+dim(cis_df)
+
+trans_de_leaf_df <- trans_df[trans_df$tx_name %in% br_leaf$tx_name,]
+head(trans_de_leaf_df)
+dim(trans_de_leaf_df)
+dim(trans_df)
+
+cis_de_leaf_plot <- ggplot(cis_df)
+cis_de_leaf_plot <- cis_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = cis_de_leaf_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+cis_de_leaf_plot
+ggsave("cis_de_leaf_plot.pdf", width = 10, height = 10)
+
+trans_de_leaf_plot <- ggplot(trans_df)
+trans_de_leaf_plot <- trans_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
+                facet_grid(qtl_chrom ~ . ) + 
+                geom_segment(data = trans_de_leaf_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
+                theme(text = element_text(size = 20))
+trans_de_leaf_plot
+ggsave("trans_de_leaf_plot.pdf", width = 10, height = 10)
+
+# end
