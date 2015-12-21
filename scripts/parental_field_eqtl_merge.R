@@ -5,9 +5,6 @@
 ###########
 
 # TODO make sure there are not two trans eQTL per chromosome per gene
-# Go Enrichment?
-# trans hotspots
-
 library(dplyr)
 library(data.table)
 library(ggplot2)
@@ -91,12 +88,14 @@ trans_plot <- trans_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), s
                         facet_grid(qtl_chrom ~ . )
                         theme(text = element_text(size = 20))
 trans_plot
-ggsave("cis_eqtl_plot.pdf", width = 4, height = 4)
+ggsave("trans_eqtl_plot.pdf", width = 4, height = 4)
 
 head(trans_df)
 head(cis_df)
 str(cis_df)
 str(trans_df)
+
+# put data together
 ct_merge <- rbind(cis_df, trans_df)
 head(ct_merge)
 dim(ct_merge)
@@ -108,6 +107,7 @@ merge_plot <- merge_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod, co
                         theme(text = element_text(size = 20))
 merge_plot
 
+# cis trans plot
 merge_plot <- ggplot(ct_merge)
 merge_plot <- merge_plot + geom_point(aes(x = qtl_pos, y = tx_start, color = lod ), size = 1.5) +
                         scale_y_reverse() +
@@ -115,9 +115,11 @@ merge_plot <- merge_plot + geom_point(aes(x = qtl_pos, y = tx_start, color = lod
                         theme(axis.ticks = element_blank(), axis.text.x = element_blank(),
                          axis.text.y = element_blank())
 merge_plot
-
-
 ggsave("cis_trans_eqtl_plot.pdf", width = 10, height = 10)
+
+############
+# flowering gene distribution
+############
 
 setwd('~/git.repos/brassica_eqtl_v1.5/data/')
 br_flr <- read.delim("br_flowering_genes.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
@@ -125,8 +127,6 @@ head(br_flr)
 dim(br_flr)
 colnames(br_flr)
 
-# make trans plot with flowering time coordinates
-# call each df seperately for each geom
 str(flr_genes)
 flr_genes <- br_flr[9]
 colnames(flr_genes)[1] <- "gene_name"
@@ -159,7 +159,9 @@ cis_flr_plot <- cis_flr_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod)
 cis_flr_plot
 ggsave("cis_flr_plot.pdf", width = 10, height = 10)
 
-
+############
+# parental analysis data
+############
 setwd('~/git.repos/brassica_parents/data/')
 
 br_fruits <- read.delim("parental_fruit_field_DE.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
@@ -227,5 +229,126 @@ trans_de_leaf_plot <- trans_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_p
                 theme(text = element_text(size = 20))
 trans_de_leaf_plot
 ggsave("trans_de_leaf_plot.pdf", width = 10, height = 10)
+
+#############
+# eQTL GO enrichment
+#############
+library(Biostrings)
+library(GO.db)
+library(goseq)
+
+# infile and manipulate go annotation file
+setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
+brass_go <- read.table("Brassica_rapa_v1.5_final_annot.wego", header = FALSE)
+head(brass_go)
+colnames(brass_go) <- c("Gene", "GO")
+dim(brass_go)
+
+# make list object to store data
+brass_go_list <- strsplit(as.character(brass_go[,2]),split=",",fixed=T)
+head(brass_go_list)
+names(brass_go_list) <- as.character(brass_go[,1])
+head(brass_go_list)
+length(brass_go_list)
+
+# also need to infile the gene length data as goseq uses this to estimate any biases based on gene
+# lengths in the dataset. 
+brass_gene_lengths <- read.table("Brassica_rapa_v1.5_final_gene_lengths", header = FALSE)
+head(brass_gene_lengths)
+colnames(brass_gene_lengths) <- c("Gene", "length")
+dim(brass_gene_lengths)
+str(brass_gene_lengths)
+# [1] 43463     2
+brass_gene_lengths$Gene <- as.character(brass_gene_lengths$Gene)
+dim(brass_gene_lengths)
+# [1] 43463     2
+
+
+
+gene_names <- as.data.frame(high1$names)
+head(gene_names)
+names(gene_names) <- "tx_name"
+keeps <- as.character(gene_names$tx_name)
+# subset brass_gene_lengths for eQTL genes
+# cis df
+brass_gene_lengths_red <- brass_gene_lengths[brass_gene_lengths$Gene %in% keeps,]
+str(brass_gene_lengths_red)
+# 35039 total genes tested for eQTL
+
+# of total genes tested need to get the ones that are significant for whatever
+keeps_cis <- as.character(cis_df$tx_name)
+head(keeps_cis)
+cis_gene_lengths <- brass_gene_lengths_red[brass_gene_lengths_red$Gene %in% keeps_cis,]
+not_cis_gene <- brass_gene_lengths_red[!brass_gene_lengths_red$Gene %in% keeps_cis,]
+
+dim(cis_gene_lengths)
+head(cis_gene_lengths)
+# [1] 8907    2
+dim(not_cis_gene)
+head(not_cis_gene)
+# [1] 26132     2
+
+nullp_vector <- rep(c(1,0),c(nrow(cis_gene_lengths), nrow(not_cis_gene)))
+head(nullp_vector)
+tail(nullp_vector)
+names(nullp_vector) <- c(cis_gene_lengths$Gene, not_cis_gene$Gene)
+
+bias_data_vector <- c(cis_gene_lengths$length, not_cis_gene$length)
+head(bias_data_vector)
+# ?rep
+# ?nullp
+
+brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_data_vector)
+# # Warning message:
+# # In pcls(G) : initial point very close to some inequality constraints
+
+# ?goseq
+# # need to decide whether or not to use the useuse_genes_without_cat=TRUE option. 
+# # ~8000 genes not included in analysis that do not have a GO category classification
+go_analysis_cis  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
+head(go_analysis_cis, 100)
+
+
+##########
+#Total
+##########
+
+# of total genes tested need to get the ones that are significant for whatever
+keeps_trans <- as.character(trans_df$tx_name)
+head(keeps_trans)
+length(keeps_trans)
+# [1] 3749
+trans_gene_lengths <- brass_gene_lengths_red[brass_gene_lengths_red$Gene %in% keeps_trans,]
+not_trans_gene <- brass_gene_lengths_red[!brass_gene_lengths_red$Gene %in% keeps_trans,]
+
+dim(trans_gene_lengths)
+head(trans_gene_lengths)
+# [1] 3596    2
+
+dim(not_trans_gene)
+head(not_trans_gene)
+# [1] 31443     2
+
+nullp_vector <- rep(c(1,0),c(nrow(trans_gene_lengths), nrow(not_trans_gene)))
+head(nullp_vector)
+tail(nullp_vector)
+names(nullp_vector) <- c(trans_gene_lengths$Gene, not_trans_gene$Gene)
+
+bias_data_vector <- c(trans_gene_lengths$length, not_trans_gene$length)
+head(bias_data_vector)
+
+brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_data_vector)
+# # Warning message:
+# # In pcls(G) : initial point very close to some inequality constraints
+
+# ?goseq
+# # need to decide whether or not to use the useuse_genes_without_cat=TRUE option. 
+# # ~8000 genes not included in analysis that do not have a GO category classification
+go_analysis_trans  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
+head(go_analysis_trans, 100)
+
+
+
+
 
 # end
