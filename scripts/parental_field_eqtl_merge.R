@@ -5,6 +5,8 @@
 ###########
 
 # TODO make sure there are not two trans eQTL per chromosome per gene
+# promotor
+
 library(dplyr)
 library(data.table)
 library(ggplot2)
@@ -55,6 +57,16 @@ cis_plot
 setwd('~/git.repos/brassica_eqtl_v1.5/output/')
 ggsave("cis_eqtl_plot.pdf", width = 10, height = 15)
 
+#get large cis effect genes
+# arbitrary cutoff
+large_cis <- cis_df[cis_df$lod > 100,]
+dim(large_cis)
+large_cis
+#73
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+write.table(large_cis, "large_effect_cis.csv", sep = ",", col.names = TRUE, row.names = TRUE)
+
+
 # trans eQTL
 trans_df <- subset(cistrans_df, cis_trans == "trans")
 dim(trans_df)
@@ -64,6 +76,13 @@ dim(trans_df)
 
 head(trans_df)
 tail(trans_df)
+
+large_trans <- trans_df[trans_df$lod > 100,]
+dim(large_trans)
+large_trans
+#17
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+write.table(large_trans, "large_effect_trans.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
 #########
 # TODO
@@ -88,7 +107,8 @@ trans_plot <- trans_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), s
                         facet_grid(qtl_chrom ~ . )
                         theme(text = element_text(size = 20))
 trans_plot
-ggsave("trans_eqtl_plot.pdf", width = 4, height = 4)
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+ggsave("trans_eqtl_plot.pdf", width = 10, height = 10)
 
 head(trans_df)
 head(cis_df)
@@ -263,8 +283,6 @@ brass_gene_lengths$Gene <- as.character(brass_gene_lengths$Gene)
 dim(brass_gene_lengths)
 # [1] 43463     2
 
-
-
 gene_names <- as.data.frame(high1$names)
 head(gene_names)
 names(gene_names) <- "tx_name"
@@ -308,9 +326,11 @@ brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_da
 go_analysis_cis  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
 head(go_analysis_cis, 100)
 
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+write.table(go_analysis_cis, "cis_eqtl_enrichment.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
 ##########
-#Total
+#Trans
 ##########
 
 # of total genes tested need to get the ones that are significant for whatever
@@ -347,8 +367,10 @@ brass_nullp <- nullp(nullp_vector, genome = NULL, id = NULL, bias.data = bias_da
 go_analysis_trans  <-  goseq(brass_nullp, gene2cat = brass_go_list, use_genes_without_cat = TRUE)
 head(go_analysis_trans, 100)
 
+setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+write.table(go_analysis_trans, "trans_eqtl_enrichment.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
-
-
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+save.image(file = "un_eqtl_parent_field.RData", version = NULL, ascii = FALSE, safe = TRUE)
 
 # end
