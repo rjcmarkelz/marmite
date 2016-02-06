@@ -317,8 +317,7 @@ head(brass_p_df)
 
 #double check before merge
 rownames(mlistdf)
-rownames(brass_p_df)
-
+rownames(brass_p_dfcd
 #merge dataframes based on row name
 brass_merge <- merge(mlistdf, brass_t_df, by = "row.names")
 brass_merge

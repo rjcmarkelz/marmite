@@ -32,6 +32,12 @@ system.time(scanone_imp_tot <- scanone(brass_total, pheno.col = 1:35039,
 save.image(file = "un_eqtl.RData", version = NULL,
  ascii = FALSE, safe = TRUE)
 
+# quick random eQTL output example 
+# clean this up next time! 
+cim_test <- cim(brass_total, pheno.col = "Bra037226")
+plot(cim_test)
+head(cim_test)
+
 
 #use hotspot library to extract qtl for each gene
 library(qtlhot)
@@ -400,6 +406,28 @@ met_plot <- met_plot +  theme_bw() + geom_point(aes(x = pos, y = value), size = 
 met_plot
 setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
 ggsave("met_plot.pdf", met_plot, width = 20, height = 30)
+
+head(cim_test)
+peak <- max(cim_test$lod)
+peak
+example_plot <- ggplot(cim_test)
+example_plot <- example_plot +  theme_bw() + geom_line(aes(x = pos, y = lod), size = 2) +
+                        geom_hline(yintercept = 2.44, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak * -0.02), yend = (peak * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        facet_grid(. ~ chr) +
+                        theme(axis.title=element_text(face="bold",size="25"),
+                              axis.text=element_text(face="bold", size="15"),
+                              legend.position = "none")  +
+                        xlab("Genetic Distance Along Chromosome") +
+                        ylab("LOD Score") 
+example_plot
+setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
+ggsave("example_eqtl_plot.pdf", example_plot, width = 20, height = 10)
+
+
+
+
 # attributes(brassica_peaks)$scanone
 
 
