@@ -1,18 +1,15 @@
 ###########
 # Cody Markelz
 # markelz@gmail.com
-# Modified December 17, 2015
+# Modified March 17, 2016
 ###########
-
-# TODO make sure there are not two trans eQTL per chromosome per gene
-# promotor
 
 library(dplyr)
 library(data.table)
 library(ggplot2)
 
 # load dataset
-load('~/git.repos/brassica_eqtl_v1.5/data/un_eqtl.RData')
+load('~/git.repos/brassica_eqtl_paper/input/scanone-eqtl.RData')
 ls()
 
 # choose between cis-peaks
@@ -32,7 +29,6 @@ head(cis_df)
 length(unique(cis_df$tx_name))
 str(cis_df)
 
-?aggregate
 cis_ag <- aggregate(lod ~ tx_name, data = cis_df, max)
 dim(cis_ag)
 
@@ -54,8 +50,8 @@ cis_plot <- cis_plot +  theme_bw() + geom_point(aes(x = tx_start, y = lod), size
                         facet_grid(qtl_chrom ~ . ) +
                         theme(text = element_text(size = 20))
 cis_plot
-setwd('~/git.repos/brassica_eqtl_v1.5/output/')
-ggsave("cis_eqtl_plot.pdf", width = 10, height = 15)
+setwd('~/git.repos/brassica_eqtl_paper/output/')
+ggsave("cis_eqtl_plot.png", width = 10, height = 15)
 
 #get large cis effect genes
 # arbitrary cutoff
@@ -63,7 +59,7 @@ large_cis <- cis_df[cis_df$lod > 100,]
 dim(large_cis)
 large_cis
 #73
-setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+setwd('~/git.repos/brassica_eqtl_paper/input/')
 write.table(large_cis, "large_effect_cis.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
 
@@ -72,7 +68,7 @@ trans_df <- subset(cistrans_df, cis_trans == "trans")
 dim(trans_df)
 trans_df <- trans_df[!grepl("^Sc", trans_df$tx_chrom),]
 dim(trans_df)
-# [1] 11520    13
+# [1] 11024    13
 
 head(trans_df)
 tail(trans_df)
@@ -81,7 +77,7 @@ large_trans <- trans_df[trans_df$lod > 100,]
 dim(large_trans)
 large_trans
 #17
-setwd('~/git.repos/brassica_eqtl_v1.5/output/')
+setwd('~/git.repos/brassica_eqtl_paper/input/')
 write.table(large_trans, "large_effect_trans.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
 #########
@@ -107,8 +103,8 @@ trans_plot <- trans_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod), s
                         facet_grid(qtl_chrom ~ . )
                         theme(text = element_text(size = 20))
 trans_plot
-setwd('~/git.repos/brassica_eqtl_v1.5/output/')
-ggsave("trans_eqtl_plot.pdf", width = 10, height = 10)
+setwd('~/git.repos/brassica_eqtl_paper/output/')
+ggsave("trans_eqtl_plot.png", width = 10, height = 10)
 
 head(trans_df)
 head(cis_df)
@@ -126,6 +122,8 @@ merge_plot <- merge_plot +  theme_bw() + geom_point(aes(x = qtl_pos, y = lod, co
                         facet_grid(qtl_chrom ~ . )
                         theme(text = element_text(size = 20))
 merge_plot
+setwd('~/git.repos/brassica_eqtl_paper/output/')
+ggsave("cis_trans_eqtl_plot.png", width = 10, height = 10)
 
 # cis trans plot
 merge_plot <- ggplot(ct_merge)
@@ -135,7 +133,8 @@ merge_plot <- merge_plot + geom_point(aes(x = qtl_pos, y = tx_start, color = lod
                         theme(axis.ticks = element_blank(), axis.text.x = element_blank(),
                          axis.text.y = element_blank())
 merge_plot
-ggsave("cis_trans_eqtl_plot.pdf", width = 10, height = 10)
+?ggsave
+ggsave("cis_diagonal.png", width = 10, height = 10, dpi = 300)
 
 ############
 # flowering gene distribution
@@ -164,7 +163,8 @@ trans_flr_plot <- trans_flr_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = 
                 geom_segment(data = trans_flr_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
                 theme(text = element_text(size = 20))
 trans_flr_plot
-ggsave("trans_flr_plot.pdf", width = 10, height = 10)
+setwd('~/git.repos/brassica_eqtl_paper/output/')
+ggsave("trans_flr_plot.png", width = 10, height = 10)
 
 cis_flr_df <- cis_df[cis_df$tx_name %in% flr_genes$gene_name,]
 head(cis_flr_df)
@@ -177,7 +177,8 @@ cis_flr_plot <- cis_flr_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod)
                 geom_segment(data = cis_flr_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
                 theme(text = element_text(size = 20))
 cis_flr_plot
-ggsave("cis_flr_plot.pdf", width = 10, height = 10)
+setwd('~/git.repos/brassica_eqtl_paper/output/')
+ggsave("cis_flr_plot.png", width = 10, height = 10)
 
 ############
 # parental analysis data
@@ -207,7 +208,7 @@ cis_de_plot <- cis_de_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), 
                 theme(text = element_text(size = 20))
 cis_de_plot
 
-ggsave("cis_de_fruit_plot.pdf", width = 10, height = 10)
+ggsave("cis_de_fruit_plot.png", width = 10, height = 10)
 
 trans_de_plot <- ggplot(trans_df)
 trans_de_plot <- trans_de_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
@@ -215,7 +216,7 @@ trans_de_plot <- trans_de_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lo
                 geom_segment(data = trans_de_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
                 theme(text = element_text(size = 20))
 trans_de_plot
-ggsave("trans_de_fruit_plot.pdf", width = 10, height = 10)
+ggsave("trans_de_fruit_plot.png", width = 10, height = 10)
 
 
 br_leaf <- read.delim("parental_leaf_field_DE.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
@@ -240,7 +241,7 @@ cis_de_leaf_plot <- cis_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_pos, 
                 geom_segment(data = cis_de_leaf_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
                 theme(text = element_text(size = 20))
 cis_de_leaf_plot
-ggsave("cis_de_leaf_plot.pdf", width = 10, height = 10)
+ggsave("cis_de_leaf_plot.png", width = 10, height = 10)
 
 trans_de_leaf_plot <- ggplot(trans_df)
 trans_de_leaf_plot <- trans_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_pos, y = lod), size = 1.5) +
@@ -248,7 +249,7 @@ trans_de_leaf_plot <- trans_de_leaf_plot + theme_bw() + geom_point(aes(x = qtl_p
                 geom_segment(data = trans_de_leaf_df, aes(x = qtl_pos, xend = qtl_pos), y = 0 , yend = 100, color = 'red') +
                 theme(text = element_text(size = 20))
 trans_de_leaf_plot
-ggsave("trans_de_leaf_plot.pdf", width = 10, height = 10)
+ggsave("trans_de_leaf_plot.png", width = 10, height = 10)
 
 #############
 # eQTL GO enrichment
@@ -265,7 +266,7 @@ colnames(brass_go) <- c("Gene", "GO")
 dim(brass_go)
 
 # make list object to store data
-brass_go_list <- strsplit(as.character(brass_go[,2]),split=",",fixed=T)
+brass_go_list <- strsplit(as.character(brass_go[,2]), split=",", fixed=T)
 head(brass_go_list)
 names(brass_go_list) <- as.character(brass_go[,1])
 head(brass_go_list)

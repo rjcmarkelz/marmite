@@ -3,6 +3,7 @@ source("RF_functions.R")
 
 library(randomForest)
 library(qtl)
+library(ggplot2)
 #some of this involves random draws
 set.seed(123567)
 # simulate brassica cross
@@ -128,7 +129,7 @@ m1[3] #for g13
 # [1] "D2M33"
 
 g61epi <- g61*0.80
-g62epi <- g62*-0.50
+g62epi <- g62*0.50
 geno_epi <- g61epi + g62epi
 geno_epi
 br_test_cross$pheno$trait3 <- br_traits(g13, effect = 0.3, variance = 0.5) + geno_epi
@@ -159,11 +160,37 @@ sf_corr_epi[sf_corr_epi < 0 ] <- 0
 # comparison plots
 par(mfrow = c(1, 1))
 plot(scanout3)
+plot(scanout3, chr = 6)
 # plot(sf_epi, type = "h", ylab = "select freq", main = "RFSF, uncorrected")
 
+head(sf_corr_epi)
+tail(sf_corr_epi)
 plot(sf_corr_epi, type = "h", ylab = "adjusted select freq", main = "RFSF, corrected")
 plot.map(br_test_cross, chr = 6)
 
+scanout4 <- scanone(br_test_cross, pheno.col = 4)
+set.seed(123454)
+scanout4 <- cim(br_test_cross, pheno.col = 4)
+plot(scanout4)
 
+scanout4
 
+flr_cim_A06 <- as.data.frame(subset(scanout4, chr = 6))
+flr_cim_A06
+plot(flr_cim_A06$pos, flr_cim_A06$lod)
+peak2 <- 10
+flr_A06 <- ggplot(flr_cim_A06)
+flr_A06 <- flr_A06 +  theme_bw() + scale_y_continuous(limits=c(0, 40)) + 
+                        geom_line(aes(x = pos, y = lod), size = 2) +
+                        geom_hline(yintercept = 2.87, color = "red", size = 1) +
+                        geom_segment(aes(x = pos, xend = pos), y = (peak2 * -0.02), yend = (peak2 * -0.05)) +
+                        theme(text = element_text(size = 20)) +
+                        xlab("Genetic Distance (cM)") +
+                        ylab("LOD Score") 
+flr_A06
+setwd("/Users/Cody_2/git.repos/brassica_genetic_map_paper/output")
+ggsave("flr_A06_qtl_simulation.pdf", flr_A06, height = 10, width = 10)
+
+head(sf_corr_epi)
+qplot(sf_corr_epi)
 
