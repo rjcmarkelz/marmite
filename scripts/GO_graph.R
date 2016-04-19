@@ -16,18 +16,29 @@ BrMap
 plot(BrMap)
 
 args(eQTLcrossParam)
+eQTLcrossParam
 args(reQTLcross)
-eqtl <- reQTLcross(eQTLcrossParam(map = BrMap, genes = 50, type = "bc"))
+eqtl <- reQTLcross(eQTLcrossParam(map = BrMap, genes = 50, type = "bc", cis = 0.5,
+                     trans =rep(5,5)), a = 2, rho = 0.5)
 eqtl
 str(eqtl)
 eqtl@model
-
+plot(eqtl)
 set.seed(23343)
 cross <- sim.cross(BrMap, eqtl)
-cross
-
+str(cross)
+class(cross)
 
 str(eqtl)
 allcis <- ciseQTL(eqtl)
 allcis
+
+eQTLnetworkEstimate
+showMethods("eQTLnetworkEstimate")
+
+set.seed(1234)
+g <- rgraphBAM(dRegularMarkedGraphParam(pI = 2, pY = 10, d = 3))
+plot(g)
+?convert2riself
+?scanone
 
