@@ -1,4 +1,6 @@
 library(ggplot2)
+install.packages("lsr")
+library(lsr)
 #infile genomic coordinates of genes
 setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
 
@@ -96,8 +98,6 @@ trans_cent_plot <- trans_cent_plot +  theme_bw() +
                     facet_grid(tx_chrom ~ .) 
 
 
-
-
 trans_cent$Centromere[1:150]
 trans_cent$centplot <- trans_cent$Centromere
 trans_cent$centplot 
@@ -192,12 +192,17 @@ tail(ase)
 # merge available data
 ase_cent <- merge(ase, trans_cent, by.x = "gene_name", by.y = "geneID", all.x = TRUE)
 dim(ase_cent)
-
-
-
 head(ase_cent)
+write.table(ase_cent, "ase-cent.csv")
+
 ase_cent$abs_t <- abs(ase_cent$t_stat)
 ase_cent <- ase_cent[!is.na(ase_cent$Chr),]
+plot(ase_cent$abs_t)
+
+?ifelse
+ase_cent$large <- ifelse(ase_cent$abs_t >= 10, 1, 0)
+head(ase_cent)
+sum(ase_cent$large)
 
 ase_dist1 <- ggplot(ase_cent)
 ase_dist1 <- ase_dist1 +  theme_bw() + 

@@ -705,6 +705,7 @@ save.image()
 ls()
 
 
+?stepwiseqtl()
 
 
 
