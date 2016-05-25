@@ -1,6 +1,7 @@
 library(ggplot2)
 install.packages("lsr")
 library(lsr)
+library(dplyr)
 #infile genomic coordinates of genes
 setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
 
@@ -201,8 +202,25 @@ plot(ase_cent$abs_t)
 
 ?ifelse
 ase_cent$large <- ifelse(ase_cent$abs_t >= 10, 1, 0)
+
+ase_cent$sub_genome <- as.character(ase_cent$sub_genome)
+
 head(ase_cent)
-sum(ase_cent$large)
+str(ase_cent)
+sum(ase_cent$large == 1)
+# [1] 3093
+?subset
+LF <- subset(ase_cent, large == 1 & sub_genome == "LF")
+MF1 <- subset(ase_cent, large == 1 & sub_genome == "MF1")
+MF2 <- subset(ase_cent, large == 1 & sub_genome == "MF2")
+dim(LF1)
+dim(MF1)
+dim(MF2)
+
+table(ase_cent$sub_genome)
+dim()
+head(LF1)
+tail(LF1)
 
 ase_dist1 <- ggplot(ase_cent)
 ase_dist1 <- ase_dist1 +  theme_bw() + 
