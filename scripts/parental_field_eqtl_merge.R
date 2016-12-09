@@ -259,7 +259,7 @@ library(GO.db)
 library(goseq)
 
 # infile and manipulate go annotation file
-setwd("/Users/Cody_2/git.repos/brassica_genome_db/raw_data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_genome_db/raw_data")
 brass_go <- read.table("Brassica_rapa_v1.5_final_annot.wego", header = FALSE)
 head(brass_go)
 colnames(brass_go) <- c("Gene", "GO")
@@ -371,7 +371,7 @@ head(go_analysis_trans, 100)
 setwd('~/git.repos/brassica_eqtl_v1.5/output/')
 write.table(go_analysis_trans, "trans_eqtl_enrichment.csv", sep = ",", col.names = TRUE, row.names = TRUE)
 
-setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_eqtl_v1.5/data")
 save.image(file = "un_eqtl_parent_field.RData", version = NULL, ascii = FALSE, safe = TRUE)
 
 # end

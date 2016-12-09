@@ -5,7 +5,7 @@
 ##########
 
 # go to data directory
-setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_eqtl_v1.5/data")
 
 # large file (112 MB) takes about 1 minute to get into memory
 mapped_counts <- read.delim("RIL_v1.5_mapping.tsv", header = TRUE, sep = "\t")
@@ -208,7 +208,7 @@ dim(brassica_DE)
 brassica_DE <- calcNormFactors(brassica_DE)
 
 # output plots, they are much to large to fit into memory
-setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/output")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_eqtl_v1.5/output")
 png(file="Brassica_MDS.png",width=1000,height=1000,res=100)
 plotMDS(brassica_DE)
 dev.off()
@@ -264,7 +264,7 @@ hist(test)
 # I am convinced that I should leave these values in log2 for eQTL mapping
 
 #export BLUES for eQTL mapping
-setwd("/Users/Cody_2/git.repos/brassica_eqtl_v1.5/data")
+setwd("/Users/rjcmarkelz1/git.repos/brassica_eqtl_v1.5/data")
 ?write.table
 write.table(brassica_BLUE_df, file="brassica_blues.csv", sep=",",
            row.names = TRUE, col.names = TRUE) 
